@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.12.14)  14 DEC 2025 21:09
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.12.14)  14 DEC 2025 22:19
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -417,50 +417,105 @@ LaTeX Info: Redefining \addtolength on input line 87.
 \calc@Cskip=\skip54
 )
 \c@@todonotes@numberoftodonotes=\count325
+) (C:\Users\LiliDeBruyn\AppData\Local\Programs\MiKTeX\tex/latex/booktabs\booktabs.sty
+Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
+\heavyrulewidth=\dimen272
+\lightrulewidth=\dimen273
+\cmidrulewidth=\dimen274
+\belowrulesep=\dimen275
+\belowbottomsep=\dimen276
+\aboverulesep=\dimen277
+\abovetopsep=\dimen278
+\cmidrulesep=\dimen279
+\cmidrulekern=\dimen280
+\defaultaddspace=\dimen281
+\@cmidla=\count326
+\@cmidlb=\count327
+\@aboverulesep=\dimen282
+\@belowrulesep=\dimen283
+\@thisruleclass=\count328
+\@lastruleclass=\count329
+\@thisrulewidth=\dimen284
+) (C:\Users\LiliDeBruyn\AppData\Local\Programs\MiKTeX\tex/latex/tools\longtable.sty
+Package: longtable 2025-10-13 v4.24 Multi-page Table package (DPC)
+\LTleft=\skip55
+\LTright=\skip56
+\LTpre=\skip57
+\LTpost=\skip58
+\LTchunksize=\count330
+\LTcapwidth=\dimen285
+\LT@head=\box64
+\LT@firsthead=\box65
+\LT@foot=\box66
+\LT@lastfoot=\box67
+\LT@gbox=\box68
+\LT@cols=\count331
+\LT@rows=\count332
+\c@LT@tables=\count333
+\c@LT@chunks=\count334
+\LT@p@ftn=\toks33
+) (C:\Users\LiliDeBruyn\AppData\Local\Programs\MiKTeX\tex/latex/tools\array.sty
+Package: array 2025/09/25 v2.6n Tabular extension package (FMi)
+\col@sep=\dimen286
+\ar@mcellbox=\box69
+\extrarowheight=\dimen287
+\NC@list=\toks34
+\extratabsurround=\skip59
+\backup@length=\skip60
+\ar@cellbox=\box70
+) (C:\Users\LiliDeBruyn\AppData\Local\Programs\MiKTeX\tex/latex/tools\tabularx.sty
+Package: tabularx 2023/12/11 v2.12a `tabularx' package (DPC)
+\TX@col@width=\dimen288
+\TX@old@table=\dimen289
+\TX@old@col=\dimen290
+\TX@target=\dimen291
+\TX@delta=\dimen292
+\TX@cols=\count335
+\TX@ftn=\toks35
 ) (C:\Users\LiliDeBruyn\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdftex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count326
+\l__color_backend_stack_int=\count336
 ) (macless-haystack.aux)
 \openout1 = `macless-haystack.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
  (C:\Users\LiliDeBruyn\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count327
-\scratchdimen=\dimen272
-\scratchbox=\box64
-\nofMPsegments=\count328
-\nofMParguments=\count329
-\everyMPshowfont=\toks33
-\MPscratchCnt=\count330
-\MPscratchDim=\dimen273
-\MPnumerator=\count331
-\makeMPintoPDFobject=\count332
-\everyMPtoPDFconversion=\toks34
+\scratchcounter=\count337
+\scratchdimen=\dimen293
+\scratchbox=\box71
+\nofMPsegments=\count338
+\nofMParguments=\count339
+\everyMPshowfont=\toks36
+\MPscratchCnt=\count340
+\MPscratchDim=\dimen294
+\MPnumerator=\count341
+\makeMPintoPDFobject=\count342
+\everyMPtoPDFconversion=\toks37
 ) (C:\Users\LiliDeBruyn\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
  (C:\Users\LiliDeBruyn\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
-Package hyperref Info: Link coloring ON on input line 14.
+Package hyperref Info: Link coloring ON on input line 18.
  (macless-haystack.out) (macless-haystack.out)
 \@outlinefile=\write4
 \openout4 = `macless-haystack.out'.
@@ -501,7 +556,7 @@ Package hyperref Info: Link coloring ON on input line 14.
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 (titlepage.tex
-<sedes.pdf, id=98, 310.15875pt x 521.95pt>
+<sedes.pdf, id=90, 310.15875pt x 521.95pt>
 File: sedes.pdf Graphic file (type pdf)
 <use sedes.pdf>
 Package pdftex.def Info: sedes.pdf  used on input line 6.
@@ -521,33 +576,174 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.22 \newpage
+l.26 \newpage
               [1]
-Package hyperref Info: bookmark level for unknown todo defaults to 0 on input line 51.
- [2] [3] [4] [5]
+Package hyperref Info: bookmark level for unknown todo defaults to 0 on input line 55.
+ [2] [3]
+Overfull \hbox (9.69467pt too wide) in paragraph at lines 106--106
+[]|\OT1/cmr/bx/n/10 Severity|  
+ []
 
-LaTeX Warning: Empty `thebibliography' environment on input line 177.
 
-[6] (macless-haystack.aux)
+Overfull \hbox (9.69467pt too wide) in paragraph at lines 110--110
+[]|\OT1/cmr/bx/n/10 Severity|  
+ []
+
+
+Overfull \hbox (5.58664pt too wide) in paragraph at lines 115--115
+\OT1/cmr/m/n/10 Compliance|  
+ []
+
+
+Overfull \hbox (1.50742pt too wide) in paragraph at lines 115--115
+[]|\OT1/cmr/m/n/10 Critical|  
+ []
+
+
+Overfull \hbox (5.58664pt too wide) in paragraph at lines 117--117
+\OT1/cmr/m/n/10 Compliance|  
+ []
+
+
+Overfull \hbox (1.5589pt too wide) in paragraph at lines 119--119
+[]|\OT1/cmr/m/n/10 Linkability 
+ []
+
+
+Overfull \hbox (5.58664pt too wide) in paragraph at lines 121--121
+\OT1/cmr/m/n/10 Compliance|  
+ []
+
+
+Overfull \hbox (10.44771pt too wide) in paragraph at lines 123--123
+[]|\OT1/cmr/m/n/10 Unawareness|  
+ []
+
+
+Overfull \hbox (4.53522pt too wide) in paragraph at lines 123--123
+[]|\OT1/cmr/m/n/10 Medium|  
+ []
+
+
+Overfull \hbox (6.75745pt too wide) in paragraph at lines 125--125
+[]|\OT1/cmr/m/n/10 NC.1.2.a|  
+ []
+
+
+Overfull \hbox (2.69775pt too wide) in paragraph at lines 125--125
+[]|\OT1/cmr/m/n/10 Regulatory 
+ []
+
+
+Overfull \hbox (5.58664pt too wide) in paragraph at lines 125--125
+\OT1/cmr/m/n/10 Compliance|  
+ []
+
+
+Overfull \hbox (4.53522pt too wide) in paragraph at lines 125--125
+[]|\OT1/cmr/m/n/10 Medium|  
+ []
+
+
+Overfull \hbox (11.00331pt too wide) in paragraph at lines 127--127
+[]|\OT1/cmr/m/n/10 Detectability|  
+ []
+
+
+Overfull \hbox (4.53522pt too wide) in paragraph at lines 127--127
+[]|\OT1/cmr/m/n/10 Medium|  
+ []
+
+
+Overfull \hbox (6.89633pt too wide) in paragraph at lines 129--129
+[]|\OT1/cmr/m/n/10 NR.1.1.a|  
+ []
+
+
+Overfull \hbox (7.94777pt too wide) in paragraph at lines 129--129
+\OT1/cmr/m/n/10 Repudiation|  
+ []
+
+
+Overfull \hbox (4.53522pt too wide) in paragraph at lines 129--129
+[]|\OT1/cmr/m/n/10 Medium|  
+ []
+
+
+Overfull \hbox (7.313pt too wide) in paragraph at lines 131--131
+[]|\OT1/cmr/m/n/10 NC.1.2.b|  
+ []
+
+
+Overfull \hbox (2.69775pt too wide) in paragraph at lines 131--131
+[]|\OT1/cmr/m/n/10 Regulatory 
+ []
+
+
+Overfull \hbox (5.58664pt too wide) in paragraph at lines 131--131
+\OT1/cmr/m/n/10 Compliance|  
+ []
+
+
+Overfull \hbox (4.53522pt too wide) in paragraph at lines 131--131
+[]|\OT1/cmr/m/n/10 Medium|  
+ []
+
+
+Overfull \hbox (1.5589pt too wide) in paragraph at lines 133--133
+[]|\OT1/cmr/m/n/10 Linkability|  
+ []
+
+
+Overfull \hbox (4.53522pt too wide) in paragraph at lines 133--133
+[]|\OT1/cmr/m/n/10 Medium|  
+ []
+
+
+Overfull \hbox (5.58664pt too wide) in paragraph at lines 135--135
+\OT1/cmr/m/n/10 Compliance|  
+ []
+
+
+Overfull \hbox (4.53522pt too wide) in paragraph at lines 135--135
+[]|\OT1/cmr/m/n/10 Medium|  
+ []
+
+
+Overfull \hbox (6.17001pt too wide) in paragraph at lines 137--137
+[]|\OT1/cmr/m/n/10 Information 
+ []
+
+
+Overfull \hbox (4.53522pt too wide) in paragraph at lines 137--137
+[]|\OT1/cmr/m/n/10 Medium|  
+ []
+
+c:/Users/LiliDeBruyn/Documents/LILIDEBRUYN/01 - Studies/Master AI/2025-2026/Sem 1/Privacy and Big Data/Report [Latex]/macless-haystack.tex:139: ignored error: Infinite glue shrinkage found in box being split [4]
+c:/Users/LiliDeBruyn/Documents/LILIDEBRUYN/01 - Studies/Master AI/2025-2026/Sem 1/Privacy and Big Data/Report [Latex]/macless-haystack.tex:139: ignored error: Infinite glue shrinkage found in box being split [5] [6]
+
+LaTeX Warning: Empty `thebibliography' environment on input line 175.
+
+[7] [8] (macless-haystack.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-11-06>
  ***********
 Package rerunfilecheck Info: File `macless-haystack.out' has not changed.
-(rerunfilecheck)             Checksum: 82CE42252915B7D63D533D8719CB0B86;4273.
+(rerunfilecheck)             Checksum: D42B078C377310E6ED2CA58DCADD651E;4133.
  ) 
 Here is how much of TeX's memory you used:
- 21265 strings out of 467871
- 407019 string characters out of 5415471
- 813991 words of memory out of 5000000
- 49745 multiletter control sequences out of 15000+600000
+ 21464 strings out of 467871
+ 409925 string characters out of 5415471
+ 834287 words of memory out of 5000000
+ 49965 multiletter control sequences out of 15000+600000
  630180 words of font info for 48 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 99i,7n,108p,1758b,967s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 99i,7n,108p,1758b,969s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\LiliDeBruyn\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1000.pk><C:/Users/LiliDeBruyn/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/LiliDeBruyn/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/LiliDeBruyn/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/LiliDeBruyn/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb>
-Output written on macless-haystack.pdf (7 pages, 125615 bytes).
+Output written on macless-haystack.pdf (9 pages, 125033 bytes).
 PDF statistics:
- 245 PDF objects out of 1000 (max. 8388607)
- 75 named destinations out of 1000 (max. 500000)
- 202 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 205 PDF objects out of 1000 (max. 8388607)
+ 43 named destinations out of 1000 (max. 500000)
+ 186 words of extra memory for PDF output out of 10000 (max. 10000000)
 

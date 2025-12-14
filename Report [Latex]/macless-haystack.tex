@@ -7,6 +7,10 @@
 \geometry{tmargin=3cm, bmargin=2.2cm, lmargin=2.2cm, rmargin=2cm}
 \usepackage{todonotes} %Used for the figure placeholders
 \usepackage{ifthen}
+\usepackage{booktabs} %For better table formatting
+\usepackage{longtable} %For tables that span multiple pages
+\usepackage{array} %For column formatting
+\usepackage{tabularx} %For flexible table column widths
 
 % Your name and student number must be filled in on the title page found in
 % titlepage.tex.
@@ -88,28 +92,54 @@ The Macless-Haystack frontend stores very little data. The single-page browser i
 \subsubsection{Data Collected by the Macless-Haystack API}
 The API stores only minimal data, but it logs a significant amount of sensitive information. This includes every request made by the application, which means that if the logs are reviewed, the advertisement keys of all Macless-Haystack trackers can be seen.
 
-\todo[inline]{Expand on data collection details and purposes}
-\todo[inline]{Add technical architecture diagram showing data flows}
-
-\subsection{Relevant Design and Implementation Choices}
-\todo[inline]{Describe relevant design and implementation choices}
-
 % Part 2: Privacy Impact Assessment (max 2500 words)
 \section{Privacy Impact Assessment}
 
 \subsection{Threat Model}
-\todo[inline]{Start with threat model covering:}
-\todo[inline]{- Information at risk}
-\todo[inline]{- Potential adversary}
-\todo[inline]{- Trust assumptions (including trust boundaries)}
-\todo[inline]{- Trust boundaries diagram}
+The system's privacy properties depend on several trust assumptions. Users must trust Apple's infrastructure to provide end-to-end encryption (though Apple has metadata visibility), the endpoint operator to protect stored credentials and logs, and any third-party Anisette server operator to handle authentication securely. The primary trust boundaries exist at: (1) Bluetooth broadcast between tracker and nearby devices, (2) network communication between frontend and backend (currently vulnerable when HTTP is used), (3) authenticated connections to Apple's servers (which reveal query metadata), and (4) filesystem access on the server (where plaintext credentials are stored). These boundaries represent the main points where information can be compromised, as detailed in the threat analysis below.    
 
-\subsection{Privacy Issues}
-Figure out the privacy issues that an adversary can create given the technical diagram of part 1. Feel free to prioritize issues, for the report to be interesting to read and technically sound.
+\subsection{LINDDUN Privacy Threat Analysis}
+The following table presents a systematic analysis of privacy threats using the LINDDUN framework, which categorizes threats across privacy dimensions: Linkability, Identifiability, Non-repudiation, Detectability, Disclosure of information, Unawareness, and Non-compliance. Many compliance-related threats stem from the project's reverse-engineering of Apple's proprietary protocol and operation outside Apple's official ecosystem, which cannot be fully resolved without changing the project's purpose.
 
-\todo[inline]{List and describe privacy issues identified}
-\todo[inline]{Prioritize issues}
-\todo[inline]{Create privacy issues table}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{1.1cm}|>{\raggedright\arraybackslash}p{1.6cm}|>{\raggedright\arraybackslash}p{3.2cm}|>{\raggedright\arraybackslash}p{1.8cm}|>{\raggedright\arraybackslash}p{1.1cm}|>{\raggedright\arraybackslash}p{3.2cm}|}
+\hline
+\textbf{Code} & \textbf{Threat Category} & \textbf{Description} & \textbf{Affected Interaction(s)} & \textbf{Severity} & \textbf{Mitigation} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Code} & \textbf{Threat Category} & \textbf{Description} & \textbf{Affected Interaction(s)} & \textbf{Severity} & \textbf{Mitigation} \\
+\hline
+\endhead
+\hline
+\endfoot
+NC.3 / II.1 & Non-Compliance & Apple ID and password can be stored in plain text in config.ini (optional but supported). Exposes credentials to anyone with filesystem access (to the macless-haystack server). Similar for auth.json & Interaction 8, 14, 13 & Critical & Remove plain text password storage; require interactive login only \\
+\hline
+DD.4.2 / NC.2 & Data Disclosure / Non-Compliance & Storage of private and public keys in plain text. Keys should be stored using platform-specific secure storage (Apple Keychain, Android Keystore, GNOME Keyring, Windows Credential Manager). & Interaction 2, 3b & High & Implement secure key storage using platform APIs (e.g., flutter\_secure\_storage) \\
+\hline
+L.1.1 / I.2.2.b & Linkability / Information Disclosure & Static advertisement keys allow tracking of device presence. The system broadcasts the same public key continuously, enabling anyone to determine if the tracked device (and by extension, its owner) is nearby. & Interaction 4 & High & Implement key rotation mechanism (firmware currently rotates every 30 min for multi-key setups) \\
+\hline
+NC.3.c & Non-Compliance & Weak authentication: no authentication required by default, or single username/password shared among all users of an endpoint instance. & Interaction 15, 16, 17, 24 & High & Implement per-user authentication; support OAuth or token-based auth \\
+\hline
+U.1.2 & Unawareness & Users are not informed that sharing their private key with others enables complete location tracking of their device. Lacks clear privacy warnings. & Interaction 2 & Medium & Add explicit privacy warnings in documentation and UI when exporting keys \\
+\hline
+NC.1.2.a & Regulatory Non-Compliance & Violation of Apple's EULA by creating custom AirTag-like devices using Apple's Find My network infrastructure. & Interaction 3a, 4 & Medium & Add legal disclaimer; users assume responsibility \\
+\hline
+D.3 & Detectability & Static advertisement keys allow querying Apple servers to determine if a tracker is still active by checking for new location reports, even without decryption. & Interaction 4, 20 & Medium & Key rotation partially mitigates this; inherent to Find My protocol \\
+\hline
+NR.1.1.a & Non-Repudiation & Apple ID is attached to all location report requests, allowing Apple to identify and track Macless-Haystack server hosters and their query patterns. & Interaction 8, 11, 12, 13, 20 & Medium & Inherent to Apple's authentication; no mitigation without protocol changes \\
+\hline
+NC.1.2.b & Regulatory Non-Compliance & Reverse engineering and accessing iCloud authentication from non-Apple devices violates Apple's EULA & Interaction 11, 12, 13 & Medium & Legal disclaimer; users assume legal responsibility \\
+\hline
+L.2.2.1 & Linkability & Sending advertisement keys to potentially public endpoint links user's IP address with their tracked devices. & Interaction 15, 16 & Medium & Only use trusted, self-hosted endpoints; implement end-to-end encryption for API \\
+\hline
+NC.3.b & Non-Compliance & HTTP access is supported (non-mandatory HTTPS), exposing advertisement keys during transmission. Man-in-the-middle attackers can capture key. & Interaction 15, 16, 24 & Medium & Enforce HTTPS mandatory; disable HTTP in production \\
+\hline
+I.1.2 & Information Disclosure & Apple servers receive query metadata (timestamps, query frequency, advertisement key hashes) revealing usage patterns. & Interaction 20, 21 & Medium & Inherent to protocol; rate limiting and query batching can reduce exposure \\
+\hline
+\end{longtable}
+
+\subsection{GDPR Compliance Considerations}
+Macless-Haystack processes location data, which constitutes personal data under GDPR when relating to identifiable EU individuals. For personal use, GDPR obligations are minimal under the household exemption (Article 2(2)(c)). However, organizational deployments require full GDPR compliance, including appropriate security measures (Article 32), data subject rights support (Articles 15-22), and privacy by design (Article 25). The current implementation fails to meet several GDPR requirements: plaintext credential storage and optional HTTP violate security obligations (Article 32), while the lack of data export/deletion mechanisms prevents users from exercising their rights (Articles 15-22). 
 
 \subsection{Main Identified Privacy Threats}
 
@@ -119,57 +149,23 @@ In the current setup, each tracker continuously broadcasts a beacon containing t
 \subsubsection{Unit Test for Rolling Codes}
 A dedicated testing environment and accompanying test suite were created to evaluate and validate privacy-related behaviors in the tracker firmware, which had not previously undergone testing. To determine whether rolling keys were implemented, the run\_openhaystack function is invoked repeatedly while a shim replaces the Bluetooth advertising routine, enabling direct inspection of the broadcast payloads. Rolling codes are deemed absent if each invocation of run\_openhaystack consistently triggers the BLE controller with identical payload.
 
-\todo[inline]{Test has to fail instead of succeed when rolling codes are not implemented}
-\todo[inline]{Add test code snippet}
+\todo[inline]{add picture of unit test}
 
 \subsubsection{Plain Text Credentials}
-The user's Apple ID credentials are stored in plaintext on the Macless server inside the auth.json file. This means that anyone with file access to the server can read the user's credentials. This represents a serious security vulnerability that must be addressed immediately, especially when the server and client are managed by different individuals.
-
-Additionally, the frontend website is not protected by HTTPS, and communication between the frontend and the Macless Haystack server is transmitted without encryption. This creates a severe security risk if a user enters their credentials for the macless haystack server into the frontend, as the information would be sent over the network unencrypted. While the current implementation does not require users to enter their credentials, since they are provided during server setup, an uninformed user might still attempt to do so. In scenarios where the server is configured by a third party, entering credentials through the website may even be necessary for the system to function, further increasing the risk.
+The user's Apple ID credentials are stored in plaintext on the Macless server inside the auth.json file. This means that anyone with file access to the server can read the user's credentials. This represents a serious security vulnerability that must be addressed immediately, especially when the server and client are managed by different individuals. Additionally, the frontend website is not protected by HTTPS, and communication between the frontend and the Macless Haystack server is transmitted without encryption. This creates a severe security risk if a user enters their credentials for the macless haystack server into the frontend, as the information would be sent over the network unencrypted. While the current implementation does not require users to enter their credentials, since they are provided during server setup, an uninformed user might still attempt to do so. In scenarios where the server is configured by a third party, entering credentials through the website may even be necessary for the system to function, further increasing the risk.
 
 \todo[inline]{Add unit test for plain text credentials}
-\todo[inline]{Add more privacy threats as identified}
 
-\subsection{Test Cases}
-Privacy issues should also be captured in test cases, which the relevant testing framework of the selected project can run automatically. At least 2 issues should have a test that, upon completion, inform the development organization if they are fixed or not. We recommend you to capture a privacy issue that is specific enough to locate in the code base by looking at the system diagram rather than by exploring the code base to find a privacy issue. If there is no implemented recommendations, the tests should fail.
-
-\todo[inline]{Add test cases for identified privacy issues}
-\todo[inline]{Ensure at least 2 issues have automated tests}
-\todo[inline]{Add screenshot of test suite running}
 
 % Part 3: Recommendations (no specific word limit mentioned, but part of 4000 word total)
 \section{Recommendations}
-This section discusses how to address the privacy issues from Part 2 with technological or methodological modifications. These modifications may be justified with legal and technical requirements, including a sensible cost-benefit analysis that balances them and provide nuance to the recommendations. The technical architecture of Part 1 should be adapted to reflect the new technologies and methodological considerations introduced, and any prioritization from part 2 should be taken into account. We expect a high degree of originality in this part.
-
-We encourage you to implement those recommendations that address the privacy test cases you created for Part 2. This is a requirement for a top grade.
+This section discusses how to address the privacy issues from Part 2.
 
 \subsection{Rolling Codes}
 Rolling codes (or rotating keys) address the linkability problem by changing the public key that is broadcasted over time, while still allowing the real owner to decrypt all the corresponding location reports. Instead of a single static key pair, the tracker starts from a master secret and uses it to derive a sequence of public-private key pairs, for example one per 15-minute time window. At any given moment, the beacon only broadcasts the current public key, and nearby Apple devices encrypt their location reports to that key exactly as before, then upload the location report to the server. To outsiders passively listening on Bluetooth, these public keys appear as unrelated random values: the identifier at 10:00 and the identifier at 10:15 look completely different, and there is no way for them to tell that both belong to the same physical tracker. In contrast, the owner, who knows the master secret, can recompute the full schedule of rolling keys for all past time slots, query the server for reports associated with each of those keys, and decrypt them with the corresponding private keys. In other words, rolling codes preserve end-to-end encryption for the owner but break the simple "always the same identifier" signal that enables third-party tracking with static keys. Adopting rotating keys would therefore significantly reduce the privacy risk: it becomes much harder for random observers, or for large sensor deployments, to follow a specific tracker over long periods, because the broadcast identifier they see keeps changing in a way they cannot link back to one device.
 
-\todo[inline]{Add technical justification for rolling codes}
-\todo[inline]{Add cost-benefit analysis}
-\todo[inline]{Add updated technical architecture diagram showing rolling codes}
-\todo[inline]{Add implementation details if implemented}
+\subsection{Solution to second threat}
 
-\subsection{Secure Credential Storage}
-\todo[inline]{Recommend secure storage for Apple ID credentials}
-\todo[inline]{Recommend encryption at rest for auth.json}
-\todo[inline]{Add technical justification and cost-benefit analysis}
-
-\subsection{HTTPS Enforcement}
-\todo[inline]{Recommend mandatory HTTPS for frontend}
-\todo[inline]{Recommend disabling HTTP in production}
-\todo[inline]{Add technical justification and cost-benefit analysis}
-\todo[inline]{Add updated architecture diagram}
-
-\subsection{Additional Recommendations}
-\todo[inline]{Add more recommendations based on identified privacy issues}
-\todo[inline]{For each recommendation:}
-\todo[inline]{- Technical justification}
-\todo[inline]{- Legal requirements (if applicable)}
-\todo[inline]{- Cost-benefit analysis}
-\todo[inline]{- Updated architecture diagrams}
-\todo[inline]{- Implementation status}
 
 \section{Conclusion}
 \todo[inline]{Add conclusion summarizing key findings and recommendations}
