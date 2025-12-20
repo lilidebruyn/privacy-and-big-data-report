@@ -1,0 +1,116 @@
+\begin{tikzpicture}[
+    node distance=1.5cm and 2cm,
+    font=\small\sffamily,
+    >=Stealth,
+    every node/.style={align=center},
+    % Styles with explicit background for labels to hide lines behind them
+    lbl/.style={fill=white, inner sep=1.5pt, font=\scriptsize, text=black},
+    % Component Styles
+    userClass/.style={rectangle, rounded corners, draw=blue!80!black, fill=blue!5, very thick, minimum width=2.5cm, minimum height=1cm},
+    bleClass/.style={rectangle, rounded corners, draw=orange!80!black, fill=orange!5, very thick, minimum width=2.5cm, minimum height=1cm},
+    appleClass/.style={rectangle, rounded corners, draw=violet!80!black, fill=violet!5, very thick, minimum width=2.5cm, minimum height=1cm},
+    backendClass/.style={rectangle, rounded corners, draw=green!40!black, fill=green!5, very thick, minimum width=2.5cm, minimum height=1cm},
+    frontendClass/.style={rectangle, rounded corners, draw=yellow!80!black, fill=yellow!10, very thick, minimum width=2.5cm, minimum height=1cm},
+    database/.style={cylinder, shape border rotate=90, draw, aspect=0.25, minimum height=1.5cm, minimum width=1.5cm},
+    group/.style={draw=gray!50, dashed, inner sep=15pt, rounded corners, label={[anchor=north west, font=\bfseries\small, text=gray!80]north west:#1}}
+]
+
+% --- LAYOUT GRID ---
+% Column 1: User Domain (Top) & Frontend (Bottom)
+% Column 2: Backend (Center)
+% Column 3: Apple (Top) & BLE (Bottom)
+
+% === COLUMN 1 (LEFT) ===
+% User Domain
+\node[userClass] (User) {User};
+\node[userClass, right=0.5cm of User] (GenKeys) {generate\_keys.py};
+\node[database, userClass, right=0.5cm of GenKeys, aspect=0.2] (KeyFiles) {Key Files};
+
+% Frontend (placed significantly below User)
+\node[frontendClass, below=4cm of User] (FlutterApp) {Flutter App};
+\node[frontendClass, below=1cm of FlutterApp] (ReportsFetcher) {Reports Fetcher};
+\node[frontendClass, below=1cm of ReportsFetcher] (Decrypt) {Decrypt Reports};
+\node[frontendClass, below=1cm of Decrypt] (Display) {Map \& UI};
+
+% === COLUMN 2 (CENTER) ===
+% Backend aligned roughly between User/Apple top and Frontend bottom
+\node[backendClass, right=4cm of FlutterApp] (Endpoint) {mh\_endpoint.py\\HTTP Server};
+\node[backendClass, above=1cm of Endpoint] (Auth) {Authentication};
+\node[database, backendClass, right=0.5cm of Auth] (Config) {Config};
+\node[backendClass, below=1cm of Endpoint] (Anisette) {Anisette Server};
+
+% === COLUMN 3 (RIGHT) ===
+% Apple Network (Top Right, aligned with User)
+\node[appleClass, right=4cm of KeyFiles] (AppleDevices) {Apple Devices};
+\node[appleClass, below=1cm of AppleDevices] (AppleServers) {Apple iCloud\\Servers};
+\node[database, appleClass, right=0.5cm of AppleServers] (FindMyDB) {Location DB};
+
+% BLE Domain (Bottom Right, below Apple)
+\node[bleClass, below=2.5cm of AppleServers] (BLEAdv) {BLE Broadcast};
+\node[bleClass, above=0.8cm of BLEAdv] (ESP32) {Firmware\\(ESP32/NRF)};
+
+% === GROUPS ===
+\begin{scope}[on background layer]
+    \node[group={User Domain}, fit=(User) (GenKeys) (KeyFiles)] (UserDomain) {};
+    \node[group={Frontend}, fit=(FlutterApp) (ReportsFetcher) (Decrypt) (Display)] (FrontendDomain) {};
+    \node[group={Backend}, fit=(Endpoint) (Auth) (Config) (Anisette)] (BackendDomain) {};
+    \node[group={Apple Find My}, fit=(AppleDevices) (AppleServers) (FindMyDB)] (AppleDomain) {};
+    \node[group={BLE Domain}, fit=(ESP32) (BLEAdv)] (BLEDomain) {};
+\end{scope}
+
+% === EDGES ===
+
+% 1. Key Generation
+\draw[->] (User) -- node[lbl] {1. Run} (GenKeys);
+\draw[->] (GenKeys) -- node[lbl] {2. Generate} (KeyFiles);
+
+% 3. Key Distribution
+% 3a: Keys to ESP32 (Left to Bottom-Right) - Route carefully
+\draw[->] (KeyFiles) -| ++(1,-1) -- ++(0,-3) -| node[lbl, pos=0.8] {3a. Flash} (ESP32);
+% 3b: Keys to Flutter (Left Top to Left Bottom)
+\draw[->] (KeyFiles) |- ++(-1,-1.5) -| node[lbl, pos=0.8] {3b. Import} (FlutterApp);
+
+% 4-5. BLE Flow
+\draw[->] (ESP32) -- node[lbl] {4. Broadcast} (BLEAdv);
+\draw[->, dashed] (BLEAdv) -- ++(2,0) |- node[lbl, pos=0.7] {5. Scan} (AppleDevices);
+
+% 6-7. Apple Internal
+\draw[->] (AppleDevices) -- node[lbl] {6. Upload} (AppleServers);
+\draw[->] (AppleServers) -- node[lbl] {7. Store} (FindMyDB);
+
+% 8-14. Authentication (User -> Backend -> Apple)
+\draw[->] (User.south) |- ++(0, -0.5) -| node[lbl, pos=0.7] {8. Apple ID} (Endpoint.north west);
+\draw[->] (Endpoint) -- node[lbl] {9. Req} (Anisette);
+\draw[->] (Anisette.east) to[bend right=45] node[lbl] {10. Meta} (Endpoint.south east);
+
+\draw[->] (Endpoint) -- node[lbl] {11. Auth} (Auth);
+\draw[->] (Auth) -- node[lbl] {14. Store} (Config);
+% Remote Auth
+\draw[->] (Auth.north) |- ++(0,0.5) -- ++(2,0) |- node[lbl, pos=0.7] {12. GSA} (AppleServers.west);
+\draw[->] (AppleServers.south west) -- node[lbl, pos=0.5] {13. Tokens} (Auth.east);
+
+% 15-27. Reports Fetching
+\draw[->] (FlutterApp) -- node[lbl] {15. Req} (ReportsFetcher);
+\draw[->] (ReportsFetcher) -- node[lbl] {16. POST} (Endpoint);
+
+% Backend Verification & Fetch
+\draw[->] (Endpoint) to[bend left=45] node[lbl] {17. Verify} (Config);
+\draw[->] (Endpoint.west) to[bend right=30] node[lbl, left] {18. Anisette} (Anisette.west);
+% 19 omitted/implied or simplified to avoid clutter
+
+% Fetch from Apple
+\draw[->] (Endpoint.east) -- node[lbl] {20. Fetch} (AppleServers.south west);
+% Apple DB query
+\draw[->] (AppleServers) to[bend left=20] node[lbl] {21. Query} (FindMyDB);
+\draw[->] (FindMyDB) to[bend left=20] node[lbl] {22. Enc Res} (AppleServers);
+
+% Return flow
+\draw[->] (AppleServers.south) |- ++(0,-1) -| node[lbl, pos=0.1] {23. Return} (Endpoint.south east);
+\draw[->] (Endpoint.south west) -- node[lbl] {24. JSON} (ReportsFetcher.east);
+
+% Decrypt
+\draw[->] (ReportsFetcher) -- node[lbl] {25. Enc} (Decrypt);
+\draw[->] (Decrypt) -- node[lbl] {26. Decrypt} (Display);
+\draw[->] (Display.west) -- ++(-0.5,0) |- node[lbl, pos=0.8] {27. Show} (User.west);
+
+\end{tikzpicture}

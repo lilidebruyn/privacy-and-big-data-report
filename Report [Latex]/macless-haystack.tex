@@ -2,6 +2,8 @@
 
 \usepackage[english]{babel}
 \usepackage{graphicx}
+\usepackage{amsmath}
+
 \usepackage[colorlinks, linkcolor=black, citecolor=black, urlcolor=black]{hyperref}
 \usepackage{geometry}
 \geometry{tmargin=3cm, bmargin=2.2cm, lmargin=2.2cm, rmargin=2cm}
@@ -11,6 +13,9 @@
 \usepackage{longtable} %For tables that span multiple pages
 \usepackage{array} %For column formatting
 \usepackage{tabularx} %For flexible table column widths
+\usepackage{tikz}
+\usetikzlibrary{shapes, arrows.meta, positioning, fit, backgrounds, calc}
+
 
 % Your name and student number must be filled in on the title page found in
 % titlepage.tex.
@@ -52,7 +57,12 @@ The diagram above visually represents the four main stages of the application:
 
 Macless-Haystack gets rid of the need for any Apple hardware. All you need is an Apple ID with two-factor authentication via SMS and either a linux device or a supported bluetooth enabled microcontroller.
 
-\todo[inline]{Add technical architecture diagram}
+\begin{figure}[ht]
+    \centering
+    \resizebox{\textwidth}{!}{\input{architecture}}
+    \caption{Macless-Haystack Architecture and Data Flow}
+    \label{fig:architecture}
+\end{figure}
 
 \subsection{The Stakeholders}
 The primary stakeholders are the end users who want to track their own Bluetooth devices via Apple's Find My network using Macless-Haystack's web browser. They provide an Apple ID, password, and SMS-based two-factor authentication once when setting up the Macless-Haystack endpoint container, and then interact with the system via a browser to import device key JSON files, view locations, filter by date, and export data. End users are responsible for generating and managing tracker keys and deciding which devices are associated with their Apple ID; they are the primary beneficiaries of the system's tracking functionality.
@@ -159,20 +169,30 @@ The user's Apple ID credentials are stored in plaintext on the Macless server in
 
 % Part 3: Recommendations (no specific word limit mentioned, but part of 4000 word total)
 \section{Recommendations}
-This section discusses how to address the privacy issues from Part 2.
 
-\subsection{Rolling Codes}
-Rolling codes (or rotating keys) address the linkability problem by changing the public key that is broadcasted over time, while still allowing the real owner to decrypt all the corresponding location reports. Instead of a single static key pair, the tracker starts from a master secret and uses it to derive a sequence of public-private key pairs, for example one per 15-minute time window. At any given moment, the beacon only broadcasts the current public key, and nearby Apple devices encrypt their location reports to that key exactly as before, then upload the location report to the server. To outsiders passively listening on Bluetooth, these public keys appear as unrelated random values: the identifier at 10:00 and the identifier at 10:15 look completely different, and there is no way for them to tell that both belong to the same physical tracker. In contrast, the owner, who knows the master secret, can recompute the full schedule of rolling keys for all past time slots, query the server for reports associated with each of those keys, and decrypt them with the corresponding private keys. In other words, rolling codes preserve end-to-end encryption for the owner but break the simple "always the same identifier" signal that enables third-party tracking with static keys. Adopting rotating keys would therefore significantly reduce the privacy risk: it becomes much harder for random observers, or for large sensor deployments, to follow a specific tracker over long periods, because the broadcast identifier they see keeps changing in a way they cannot link back to one device.
+\subsection{Mitigating Linkability with Rolling Codes}
+Static advertisement keys allow anyone to track a device by listening for its constant signal. To fix this, we recommend using rolling codes, which means the key changes periodically (for example, every 15 minutes). This prevents strangers from linking different signals to the same device, but the owner can still find it because they have the secret key to calculate the list of all past and future IDs.\\
+To prevent this we can use the same method as Apple's official airtags \cite{DBLP:journals/corr/abs-2103-02282}. This uses Elliptic Curve Cryptography on the NIST P-224 curve. It starts with a master key pair and a 32-bit symmetric key. New keys are created using the ANSI X.963 key derivation function (KDF) with these formulas:
+\begin{align}
+SK_i &= \text{KDF}(SK_{i-1}, \text{``update''}, 32) \\
+(u_i, v_i) &= \text{KDF}(SK_i, \text{``diversify''}, 72) \\
+d_i &= (d_0 * u_i) + v_i \\
+p_i &= d_i * G
+\end{align}
+This requires a small firmware update. The tracker needs to store the master keys and a function to calculate the new ones. This is easy to do on chips like the ESP32 or nrf5x. We tested this and confirmed the tracker can generate new keys every 15 minutes. It should also save the current key to memory so it doesn't lose its place if the battery dies.
 
+\subsubsection{Client-Side Challenges}
+Updating the user application is harder because custom trackers are not as reliable as official AirTags. Official tags are always on, DIY trackers might be turned off for days or weeks. This causes a synchronization problem: when the tracker is off, it resumes from where it stopped, thinking it is an earlier time than it really is. It broadcasts a key that belongs to the past.
+To find the tracker, the application must ask Apple for reports matching a list of possible keys. Normal Apple devices might check a 7-day window. We cannot do this because checking 7 days worth of keys (over 600 requests) is too much. It would likely get the user's account banned by Apple for making too many requests. It also makes the app slow.
+We recommend limiting the rolling rate to 24 hours, this way we can check 7 days worth of keys in 7 requests. Because of the sync issue, if the tracker has been off, the app effectively needs to search through "old" keys to find where the tracker left off. This means finding a device that has been desynchronized for a long time might be slow or difficult to avoid hitting Apple's limits.
 \subsection{Solution to second threat}
 
 
 \section{Conclusion}
 \todo[inline]{Add conclusion summarizing key findings and recommendations}
 
-\begin{thebibliography}{9}
-\todo[inline]{Add bibliography with citations}
-\end{thebibliography}
+\bibliographystyle{plain}
+\bibliography{references}
+
 
 \end{document}
-
