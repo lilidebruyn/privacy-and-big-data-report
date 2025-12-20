@@ -1,5 +1,13 @@
 # Fdb version 4
-["pdflatex"] 1766264882.96398 "c:/Users/annem/Documents/MASTER/PRIVACY&BIGDATA/privacy-and-big-data-report/Report [Latex]/macless-haystack.tex" "macless-haystack.pdf" "macless-haystack" 1766264884.18355 0
+["bibtex macless-haystack"] 1766266277.02762 "macless-haystack.aux" "macless-haystack.bbl" "macless-haystack" 1766266279.03601 0
+  "./references.bib" 1766266168 411 c153a2a1ca7062afcee8d2bbf6acfbec ""
+  "C:/Users/annem/AppData/Local/Programs/MiKTeX/bibtex/bst/bibtex/plain.bst" 1291864736 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
+  "macless-haystack.aux" 1766266278 4202 cca6c252dcc80c793c051455b8740460 "pdflatex"
+  (generated)
+  "macless-haystack.bbl"
+  "macless-haystack.blg"
+  (rewritten before read)
+["pdflatex"] 1766266277.33632 "c:/Users/annem/Documents/MASTER/PRIVACY&BIGDATA/privacy-and-big-data-report/Report [Latex]/macless-haystack.tex" "macless-haystack.pdf" "macless-haystack" 1766266279.03683 0
   "C:/Users/annem/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1766263514 80909 eab91d9745dd2edfd62a31d53cd5fe15 ""
   "C:/Users/annem/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1000.pk" 1766263517 11548 37b6252d75e2a03c2973bb9c07c55676 ""
   "C:/Users/annem/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1766263425 24225047 821d274cb32747700efdedc7bc74f2b0 ""
@@ -8,10 +16,12 @@
   "C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmbx12.tfm" 1136765053 1324 c910af8c371558dc20f2d7822f66fe64 ""
   "C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmr12.tfm" 1136765053 1288 655e228510b4c2a1abe905c368440826 ""
   "C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmr17.tfm" 1136765053 1292 296a67155bdbfc32aa9c636f21e91433 ""
+  "C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmtt10.tfm" 1136765053 768 1321e9409b4137d6fb428ac9dc956269 ""
   "C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb" 1247596666 34811 78b52f49e893bcba91bd7581cdc144c0 ""
   "C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb" 1247596666 32080 340ef9bf63678554ee606688e7b5339d ""
   "C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb" 1247596667 35752 024fb6c41858982481f6968b5fc26508 ""
   "C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb" 1247596667 32722 d7379af29a190c3f453aba36302ff5a9 ""
+  "C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb" 1247596667 31099 342ef5a582aacbd3346f3cf4579679fa ""
   "C:/Users/annem/AppData/Local/Programs/MiKTeX/tex/context/base/mkii/supp-pdf.mkii" 1580390158 71627 94eb9990bed73c364d7f53f960cc8c5b ""
   "C:/Users/annem/AppData/Local/Programs/MiKTeX/tex/generic/atbegshi/atbegshi.sty" 1575571100 24708 5584a51a7101caf7e6bbf1fc27d8f7b1 ""
   "C:/Users/annem/AppData/Local/Programs/MiKTeX/tex/generic/babel/babel.sty" 1704647332 150008 7a05b0fdc0167c04e192003e780ab195 ""
@@ -139,11 +149,12 @@
   "C:/Users/annem/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "C:/Users/annem/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1700127522 55487 80a65caedd3722f4c20a14a69e785d8f ""
   "C:/Users/annem/AppData/Local/Programs/MiKTeX/tex/latex/xkeyval/xkeyval.sty" 1656236919 4937 4ce600ce9bd4ec84d0250eb6892fcf4f ""
-  "c:/Users/annem/Documents/MASTER/PRIVACY&BIGDATA/privacy-and-big-data-report/Report [Latex]/macless-haystack.tex" 1766264881 20849 b62e089ef2dfc12cd35d27bd895c01e3 ""
-  "macless-haystack.aux" 1766264883 4213 7826a69328df05cc4c832c5feef97ef6 "pdflatex"
-  "macless-haystack.out" 1766264883 4133 d42b078c377310e6ed2ca58dcadd651e "pdflatex"
-  "macless-haystack.tex" 1766264881 20849 b62e089ef2dfc12cd35d27bd895c01e3 ""
-  "macless-haystack.toc" 1766264883 1989 17daa114fcbb33cbeb17b5f4e3aea20c "pdflatex"
+  "c:/Users/annem/Documents/MASTER/PRIVACY&BIGDATA/privacy-and-big-data-report/Report [Latex]/macless-haystack.tex" 1766266273 20847 3c1b4e38457842145858eb1f2dcd00c8 ""
+  "macless-haystack.aux" 1766266278 4202 cca6c252dcc80c793c051455b8740460 "pdflatex"
+  "macless-haystack.bbl" 1766266277 441 3d78705a6ce8936e42feed2c67ce431f "bibtex macless-haystack"
+  "macless-haystack.out" 1766266278 4133 d42b078c377310e6ed2ca58dcadd651e "pdflatex"
+  "macless-haystack.tex" 1766266273 20847 3c1b4e38457842145858eb1f2dcd00c8 ""
+  "macless-haystack.toc" 1766266278 1989 17daa114fcbb33cbeb17b5f4e3aea20c "pdflatex"
   "sedes.pdf" 1766262867 7894 a60eac5a7224badd9bcd0b943fc66a37 ""
   "titlepage.tex" 1766262867 1392 9ed45075327f8b04d8229510079cf2d0 ""
   (generated)
