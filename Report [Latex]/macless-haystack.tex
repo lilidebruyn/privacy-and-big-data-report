@@ -2,6 +2,7 @@
 
 \usepackage[english]{babel}
 \usepackage{graphicx}
+\usepackage{float} % for [H]
 \usepackage[colorlinks, linkcolor=black, citecolor=black, urlcolor=black]{hyperref}
 \usepackage{geometry}
 \geometry{tmargin=3cm, bmargin=2.2cm, lmargin=2.2cm, rmargin=2cm}
@@ -46,7 +47,7 @@ The project we are analyzing is called Macless-Haystack, an open-source implemen
 At a high level, the Find My trackers broadcast identifiers, which can be detected by nearby Apple devices. These apple devices then anonymously upload the location of the detected signal to iCloud. The owner can later retrieve the location of their device by requesting reports containing the trackers identifier.
 \bigskip
 
-The diagram above visually represents the four main stages of the application:
+Figure~\ref{fig:macless-haystack} below visually represents the four main stages of the application:
 
 \begin{enumerate}
     \item \textbf{Pair through initial setup}: The process begins with the owner pairing their device, this means generating a unique private-public key pair. These keys are programmed onto supported Bluetooth devices.
@@ -57,7 +58,13 @@ The diagram above visually represents the four main stages of the application:
 
 Macless-Haystack gets rid of the need for any Apple hardware. All you need is an Apple ID with two-factor authentication via SMS and either a linux device or a supported bluetooth enabled microcontroller.
 
-\todo[inline]{Add technical architecture diagram}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/applicationoverview.png}
+    \caption{High-level overview of the Macless-Haystack workflow}
+    \label{fig:macless-haystack}
+\end{figure}
+
 
 \subsection{The Stakeholders}
 The primary stakeholders are the end users who want to track their own Bluetooth devices via Apple's Find My network using Macless-Haystack's web browser. They provide an Apple ID, password, and SMS-based two-factor authentication once when setting up the Macless-Haystack endpoint container, and then interact with the system via a browser to import device key JSON files, view locations, filter by date, and export data. End users are responsible for generating and managing tracker keys and deciding which devices are associated with their Apple ID; they are the primary beneficiaries of the system's tracking functionality.

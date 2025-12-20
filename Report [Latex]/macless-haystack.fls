@@ -34,6 +34,8 @@ INPUT C:\Users\annem\AppData\Local\Programs\MiKTeX\tex\latex\graphics-cfg\graphi
 INPUT C:\Users\annem\AppData\Local\Programs\MiKTeX\tex\latex\graphics-def\pdftex.def
 INPUT C:\Users\annem\AppData\Local\Programs\MiKTeX\tex\latex\graphics-def\pdftex.def
 INPUT C:\Users\annem\AppData\Local\Programs\MiKTeX\tex\latex\graphics-def\pdftex.def
+INPUT C:\Users\annem\AppData\Local\Programs\MiKTeX\tex\latex\float\float.sty
+INPUT C:\Users\annem\AppData\Local\Programs\MiKTeX\tex\latex\float\float.sty
 INPUT C:\Users\annem\AppData\Local\Programs\MiKTeX\tex\latex\hyperref\hyperref.sty
 INPUT C:\Users\annem\AppData\Local\Programs\MiKTeX\tex\latex\hyperref\hyperref.sty
 INPUT C:\Users\annem\AppData\Local\Programs\MiKTeX\tex\generic\iftex\iftex.sty
@@ -269,6 +271,13 @@ INPUT .\macless-haystack.toc
 INPUT .\macless-haystack.toc
 INPUT macless-haystack.toc
 OUTPUT macless-haystack.toc
+INPUT .\figures\applicationoverview.png
+INPUT .\figures\applicationoverview.png
+INPUT .\figures\applicationoverview.png
+INPUT .\figures\applicationoverview.png
+INPUT .\figures\applicationoverview.png
+INPUT .\figures\applicationoverview.png
+INPUT .\figures\applicationoverview.png
 INPUT C:\Users\annem\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\tcrm1000.tfm
 INPUT .\macless-haystack.bbl
 INPUT .\macless-haystack.bbl
