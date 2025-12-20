@@ -11,6 +11,7 @@
 \usepackage{longtable} %For tables that span multiple pages
 \usepackage{array} %For column formatting
 \usepackage{tabularx} %For flexible table column widths
+\setlength{\parindent}{0pt}
 
 % Your name and student number must be filled in on the title page found in
 % titlepage.tex.
@@ -28,8 +29,10 @@
 % Introduction/Executive Summary
 \section{Introduction}
 This report presents a Privacy Impact Assessment (PIA) for Macless-Haystack, an open-source project that enables users to access Apple's Find My network without requiring Apple hardware. As location tracking systems become increasingly prevalent, understanding the privacy implications of such technologies is crucial for both developers and end users.
+\bigskip
 
 The assessment examines how Macless-Haystack collects, processes, and stores location data, identifies potential privacy risks, and proposes technical solutions to mitigate these concerns. We analyze the system from multiple perspectives: the tracker devices themselves, the Macless-Haystack application and API, and Apple's Find My infrastructure that the project relies upon.
+\bigskip
 
 This report is structured in three main parts. First, we provide a detailed description of the application's functionality, stakeholders, and data collection practices. Second, we conduct a privacy impact assessment that includes a threat model, identification of privacy issues, and analysis of specific threats. Finally, we present recommendations for addressing the identified privacy concerns, with particular focus on technical implementations that can be tested and verified.
 
@@ -38,8 +41,10 @@ This report is structured in three main parts. First, we provide a detailed desc
 
 \subsection{Functionality of the Application}
 The project we are analyzing is called Macless-Haystack, an open-source implementation to use Apple's 'Find My' network without needing access to an Apple device. It builds upon the OpenHaystack project, which reverse engineered the Apple 'Find My' protocol that enables tracking of Bluetooth devices without the need of an internet connection.
+\bigskip
 
 At a high level, the Find My trackers broadcast identifiers, which can be detected by nearby Apple devices. These apple devices then anonymously upload the location of the detected signal to iCloud. The owner can later retrieve the location of their device by requesting reports containing the trackers identifier.
+\bigskip
 
 The diagram above visually represents the four main stages of the application:
 
@@ -56,10 +61,13 @@ Macless-Haystack gets rid of the need for any Apple hardware. All you need is an
 
 \subsection{The Stakeholders}
 The primary stakeholders are the end users who want to track their own Bluetooth devices via Apple's Find My network using Macless-Haystack's web browser. They provide an Apple ID, password, and SMS-based two-factor authentication once when setting up the Macless-Haystack endpoint container, and then interact with the system via a browser to import device key JSON files, view locations, filter by date, and export data. End users are responsible for generating and managing tracker keys and deciding which devices are associated with their Apple ID; they are the primary beneficiaries of the system's tracking functionality.
+\bigskip
 
 The Macless-Haystack endpoint operator is the party running the backend container that logs into Apple's Find My service and periodically fetches encrypted location reports, typically on a server with Docker installed. In many cases this is the same party as the end user.
+\bigskip
 
 The Anisette server operator runs the separate Anisette-compatible service that Macless-Haystack connects to in order to emulate a real Apple device during login and communication with Apple. This role can again coincide with the endpoint operator in a self-hosted setup, but when a public or third-party Anisette instance is used, that operator becomes a distinct stakeholder who may see sensitive authentication-related traffic and must therefore be explicitly trusted.
+\bigskip
 
 Apple is an indirect but essential stakeholder, as its Find My and iCloud infrastructure receives the encrypted location reports from nearby Apple devices and serves them to the Macless-Haystack endpoint authenticated with an Apple ID.
 
@@ -81,8 +89,10 @@ Crowd-sourced Apple devices collect only three pieces of information when they d
 \end{itemize}
 
 This data is normally deleted quickly, but users can delay deletion by placing their device in airplane mode. This data is placed on the apple servers, and used for people to retrieve the location of their tracker reference.
+\bigskip
 
 Apple stores the advertisement key together with its corresponding location report on their servers. From this, Apple can infer how many trackers are in use and estimate the general region in which they are being used, based on the uploader's IP address. Apple also knows the Apple ID associated with each device that uploads these reports. This means, at least in theory, that Apple could link a user to their tracker because the user's own Apple device will likely often be the one uploading the tracker's location reports.
+\bigskip
 
 Fetching location reports requires authentication. As a result, Apple can see which Apple account is hosting a macless-haystack endpoint and which trackers are used through that endpoint. This could allow Apple to terminate the Apple ID associated with the endpoint. The requirement for Apple ID authentication is likely in place to prevent abuse such as users uploading spam, overwhelming Apple's servers, or attempting to download large volumes of location reports that aren't their own.
 
