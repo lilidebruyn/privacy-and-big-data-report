@@ -240,7 +240,7 @@ The following table (Table~\ref{tab:lindunn}) presents a systematic analysis of 
 \endhead
 \hline
 \endfoot
-NC.3 / II.1 & Non-Compliance & Apple ID and password can be stored in plain text in config.ini (optional but supported). Exposes credentials to anyone with filesystem access (to the Macless-Haystack server). Similar for auth.json & Interaction 8, 14, 13 & Critical & Remove plain text password storage; require interactive login only \\
+NC.3 / II.1 & Non-Compliance & Apple ID and password can be stored in plain text in config.ini (optional but supported). Exposes credentials to anyone with filesystem access (to the Macless-Haystack server).  & Interaction 8, 14, 13 & Critical & Remove plain text password storage; require interactive login only \\
 \hline
 DD.4.2 / NC.2 & Data Disclosure / Non-Compliance & Storage of private and public keys in plain text. Keys should be stored using platform-specific secure storage (Apple Keychain, Android Keystore, GNOME Keyring, Windows Credential Manager). & Interaction 2, 3b & High & Implement secure key storage using platform APIs (e.g., flutter\_secure\_storage) \\
 \hline
@@ -311,7 +311,7 @@ The operator of the Macless-Haystack instance acts as the primary data controlle
 
 \textbf{GDPR Risks \& Violations:}
 
-\textbf{Integrity and Confidentiality:} There are critical failures regarding security. Apple ID credentials can be stored in plaintext (e.g., in \texttt{auth.json}), and the frontend supports unencrypted HTTP communication. This exposes potentially personal data to unauthorized access. (it becomes personal data if the middleman is able to link the data to a specific person, eg has the private key or is able to physically track the device using its static key advertisements)
+\textbf{Integrity and Confidentiality:} There are critical failures regarding security. Apple ID credentials can be stored in plaintext (e.g., in \texttt{config.ini}), and the frontend supports unencrypted HTTP communication. This exposes potentially personal data to unauthorized access. (it becomes personal data if the middleman is able to link the data to a specific person, eg has the private key or is able to physically track the device using its static key advertisements)
 
 \textbf{Transparency and Purpose Limitation:} A major deficiency is the lack of transparency. The end user (if different from the operator) is often not informed about the processing of their data, and there is no documented purpose specification. If static keys are used, the end user should also be informed that apple might process personal data, depending on if apple can link the static keys to a specific person.
 
