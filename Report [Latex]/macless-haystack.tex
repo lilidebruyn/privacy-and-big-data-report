@@ -281,7 +281,7 @@ Additionally, if Apple is considered an untrustworthy entity, the reliance on st
     \item \textbf{unit test:} A dedicated testing environment and test suite were developed to evaluate and validate privacy-related behaviors in the tracker firmware, which had not previously undergone testing. To determine if static keys are being utilized, the \texttt{run\_openhaystack} function is called repeatedly while a shim replaces the Bluetooth advertising routine, enabling direct inspection of the broadcast payloads. Static codes are detected if multiple calls to \texttt{run\_openhaystack} trigger the BLE controller with identical payloads.\footnote{The firmware supports the use of multiple static keys; however, it was tested in a configuration where only a single key was loaded.}
 
     \begin{minipage}[t]{0.48\linewidth}
-    \begin{lstlisting}[style=cstyle, language=C, caption={Unit Test used check if static codes are being used}, basicstyle=\ttfamily\tiny\color{codetext}]
+    \begin{lstlisting}[style=cstyle, language=C, caption={Unit Test used to check if static codes are being used}, basicstyle=\ttfamily\tiny\color{codetext}]
 /**
  * @brief Test that multiple openhaystack_run calls use the same advertisement data
  * 
