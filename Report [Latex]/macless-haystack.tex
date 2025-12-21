@@ -103,7 +103,7 @@ Figure~\ref{fig:macless-haystack} below visually represents the four main stages
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{figures/applicationoverview.png}
-    \caption{High-level overview of the macless-haystack / apple airtag application \cite{DBLP:journals/corr/abs-2103-02282}}
+    \caption{High-level overview of the macless-haystack / Apple airtag application \cite{DBLP:journals/corr/abs-2103-02282}}
     \label{fig:macless-haystack}
 \end{figure}
 
@@ -189,7 +189,7 @@ Crowd-sourced Apple devices collect only three pieces of information when they d
     \item and the Bluetooth signal strength at that time.
 \end{itemize}
 
-According to a blog by a Digital Forensics researcher at cellebrite\cite{binaryhick2025searchparty}, this data is normally deleted quickly, but users can delay deletion by placing their device in airplane mode. This data is placed on the apple servers, and used for people to retrieve the location of their tracker reference.
+According to a blog by a Digital Forensics researcher at cellebrite\cite{binaryhick2025searchparty}, this data is normally deleted quickly, but users can delay deletion by placing their device in airplane mode. This data is placed on the Apple servers, and used for people to retrieve the location of their tracker reference.
 \bigskip
 
 Apple stores the advertisement key together with its corresponding location report on their servers. From this, Apple can infer how many trackers are in use and estimate the general region in which they are being used, based on the uploader's IP address. Apple also knows the Apple ID associated with each device that uploads these reports. This means, at least in theory, that Apple could link a user to their tracker because the user's own Apple device will likely often be the one uploading the tracker's location reports.
@@ -313,7 +313,7 @@ The operator of the Macless-Haystack instance acts as the primary data controlle
 
 \textbf{Integrity and Confidentiality:} There are critical failures regarding security. Apple ID credentials can be stored in plaintext (e.g., in \texttt{auth.json}), and the frontend supports unencrypted HTTP communication. This exposes potentially personal data to unauthorized access. (it becomes personal data if the middleman is able to link the data to a specific person, eg has the private key or is able to physically track the device using its static key advertisements)
 
-\textbf{Transparency and Purpose Limitation:} A major deficiency is the lack of transparency. The end user (if different from the operator) is often not informed about the processing of their data, and there is no documented purpose specification. If static keys are used, the end user should also be informed that apple might process personal data, depending on if apple can link the static keys to a specific person.
+\textbf{Transparency and Purpose Limitation:} A major deficiency is the lack of transparency. The end user (if different from the operator) is often not informed about the processing of their data, and there is no documented purpose specification. If static keys are used, the end user should also be informed that Apple might process personal data, depending on if Apple can link the static keys to a specific person.
 
 \paragraph{Apple}
 Apple processes the encrypted location reports and public advertisement keys uploaded by finder devices.
