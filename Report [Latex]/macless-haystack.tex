@@ -161,7 +161,7 @@ The API stores only minimal data, but it logs a significant amount of sensitive 
         \hline
         \textbf{Data Item} & \textbf{Source} & \textbf{Storage Location} & \textbf{Retention Period} & \textbf{Potential Privacy Impact} \\ \hline
         Apple ID / Credentials & endpoint operator & JSON in API Backend & Indefinite & Full account compromise; access to other Apple services. \\ \hline
-        public & private Key(s) & End User & Browser Local Storage \& JSON in filesystem \& tracker firmware / flash storage & Indefinite & Unauthorized access to (historical) location data. \\ \hline
+        public \& private Key(s) & End User & Browser Local Storage \& JSON in filesystem \& tracker firmware / flash storage & Indefinite & Unauthorized access to (historical) location data. \\ \hline
         Advertisement Keys & Tracker / Finder Device & Apple Servers, API Logs & Apple: $<24$h; Logs: Persistent & Linkability; device/owner movement profiling by nearby observers. \\ \hline
         Location Reports & Finder Device & Apple Servers & Short-term ($\sim$24h) & Exposure of real-time/historical physical locations and routines. \\ \hline
     \end{tabularx}
@@ -231,10 +231,62 @@ In the current setup, each tracker continuously broadcasts a beacon containing t
 \begin{itemize}
     \item \textbf{unit test:} A dedicated testing environment and test suite were developed to evaluate and validate privacy-related behaviors in the tracker firmware, which had not previously undergone testing. To determine if static keys are being utilized, the \texttt{run\_openhaystack} function is called repeatedly while a shim replaces the Bluetooth advertising routine, enabling direct inspection of the broadcast payloads. Static codes are detected if multiple calls to \texttt{run\_openhaystack} trigger the BLE controller with identical payloads.\footnote{The firmware supports the use of multiple static keys; however, it was tested in a configuration where only a single key was loaded.}
 \end{itemize}
+\subsubsection{HTTP Communication}
+The current Macless Haystack server implementation allows the endpoint to run over unencrypted HTTP when TLS certificates are not configured. The code checks for the presence of certificate files and falls back to HTTP if they are missing. This creates a security risk because all communication between client and server occurs in plaintext, making it vulnerable to network sniffing and man-in-the-middle attacks. An attacker on the same network can intercept and read all traffic, including Basic Authentication credentials that are only Base64-encoded and easily decoded.
 \subsubsection{Plain Text Credentials}
-The user's Apple ID credentials are stored in plaintext on the Macless-Haystack server inside the auth.json file. This means that anyone with file access to the server can read the user's credentials. This represents a serious security vulnerability that must be addressed immediately, especially when the server and client are managed by different individuals. Additionally, the frontend website is not protected by HTTPS, and communication between the frontend and the Macless-Haystack server is transmitted without encryption. This creates a severe security risk if a user enters their credentials for the Macless-Haystack server into the frontend, as the information would be sent over the network unencrypted. While the current implementation does not require users to enter their credentials, since they are provided during server setup, an uninformed user might still attempt to do so. In scenarios where the server is configured by a third party, entering credentials through the website may even be necessary for the system to function, further increasing the risk.
+The current implementation stores authentication tokens and passwords in plaintext files that can be read directly without decryption. The auth.json file contains authentication tokens (dsid and searchPartyToken) used to communicate with Apple's servers instead of passwords after initial login. These tokens are stored as plaintext JSON, meaning anyone with file system access can read them directly. Similarly, passwords in config.ini are stored in plaintext, allowing direct reading of sensitive credentials. The authentication tokens in auth.json are particularly sensitive because they provide access to Apple's Find My service. If these tokens are compromised, an attacker can access location data and potentially track devices. The tokens are obtained after the initial Apple ID login and are used for subsequent API calls, making them equivalent to session tokens that should be protected. In the code snippet below, you can see how we test for plain text credentials.
+\begin{lstlisting}[style=cstyle, language=C, caption={Unit test plaintext credentials}]
 
-\todo[inline]{Add unit test for plain text credentials}
+    class TestHTTPSConfiguration(unittest.TestCase):
+        def test_certificate_file_must_exist_for_https(self):
+            cert_path = mh_config.getCertFile()
+            self.assertTrue(os.path.isfile(cert_path), f"No certificate at {cert_path}")
+        
+        def test_certificate_path_is_configured(self):
+            cert_file = mh_config.getCertFile()
+            self.assertNotEqual(cert_file, mh_config.getConfigPath() + "/", "Certificate path empty")
+            self.assertTrue(cert_file.endswith('.pem'), f"Expected .pem file, got: {cert_file}")
+    
+    class TestCredentialStorage(unittest.TestCase):
+        def test_config_does_not_store_plaintext_passwords(self):
+            import mh_encryption
+            import re
+            config_path = mh_config.getConfigPath() + "/config.ini"
+            if not os.path.isfile(config_path):
+                self.skipTest("config.ini not found")
+            has_plaintext = False
+            with open(config_path, 'r') as f:
+                for line in f:
+                    for field in ['appleid_pass', 'endpoint_pass']:
+                        match = re.match(rf'{field}\s*=\s*(.*)$', line.strip())
+                        if match:
+                            value = match.group(1).strip()
+                            if value and not mh_encryption.is_encrypted(value):
+                                has_plaintext = True
+                                break
+            self.assertFalse(has_plaintext, "config.ini contains plaintext passwords")
+    
+        def test_auth_json_does_not_store_plaintext_tokens(self):
+            import mh_encryption
+            auth_path = mh_config.getConfigFile()
+            if not os.path.isfile(auth_path):
+                self.skipTest("auth.json not found")
+            with open(auth_path, 'r') as f:
+                content = f.read().strip()
+            is_encrypted = mh_encryption.is_encrypted(content)
+            if not is_encrypted:
+                try:
+                    data = json.loads(content)
+                    has_tokens = data.get('dsid') or data.get('searchPartyToken')
+                    if has_tokens:
+                        self.fail("auth.json stores tokens in plaintext")
+                except json.JSONDecodeError:
+                    self.fail("auth.json is neither encrypted nor valid JSON")
+    
+    \end{lstlisting}
+    
+
+%\todo[inline]{Add unit test for plain text credentials}
 
 
 % Part 3: Recommendations (no specific word limit mentioned, but part of 4000 word total)
@@ -331,6 +383,11 @@ As a result, when a user returns to the application after a long period of inact
 This uncertainty forces us to search backward from the estimated current code to the last known code. However, performing this search naively risks triggering Apple server rate limits or bans. Additionally, there is currently no built-in mechanism to resynchronize the tracker with the application.
 
 Resynchronization could be implemented through Bluetooth or NFC, or by integrating an RTC module into the tracker. An RTC would provide accurate timekeeping, allowing the application to reliably calculate code updates even after extended powered off periods\footnote{RTC modules typically include a built-in backup battery to maintain timekeeping when the host device is unpowered. Battery life can range from several months to over ten years, depending on usage. In our use case, the RTC would only draw backup power when the tracker is turned off, resulting in a multi-year battery lifespan.}
+\subsection{HTTPS Enforcement}
+The server should enforce HTTPS and not allow HTTP fallback when TLS certificates are missing. Currently, the server falls back to unencrypted HTTP if certificate files are not found. The server startup should check for both the TLS certificate and private key files, and terminate with a clear error message if either is missing, rather than falling back to HTTP. This prevents accidental deployment of an unencrypted server and ensures administrators are aware of the security requirement. For development and testing, a helper script should be provided to generate self-signed certificates, but production deployments should use certificates from a trusted certificate authority.
+\subsection{Credential Encryption}
+All sensitive credentials, including authentication tokens stored in auth.json and passwords in config.ini, should be encrypted at rest using a symmetric encryption algorithm. Currently, these credentials are stored in plaintext files that can be read directly by anyone with file system access.An encryption module should be implemented that automatically encrypts credentials when they are written to files and decrypts them when they are read. The master encryption key should be stored securely with restricted file permissions, and encrypted credential files should also have restricted permissions to prevent unauthorized access. A migration script could be provided to convert existing plaintext files to encrypted format, allowing existing deployments to be upgraded without data loss.
+
 
 \section{Conclusion}
 \todo[inline]{Add conclusion summarizing key findings and recommendations}
