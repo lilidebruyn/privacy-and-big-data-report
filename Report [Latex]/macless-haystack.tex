@@ -15,6 +15,45 @@
 \usepackage{tabularx} %For flexible table column widths
 \usepackage{tikz}
 \usetikzlibrary{shapes, arrows.meta, positioning, fit, backgrounds, calc}
+\usepackage{listings}
+\usepackage{xcolor}
+
+% Modern light code listing style for C
+\definecolor{codebg}{RGB}{250,250,250}
+\definecolor{codecomment}{RGB}{106,115,125}
+\definecolor{codestring}{RGB}{80,161,79}
+\definecolor{codekeyword}{RGB}{167,29,93}
+\definecolor{codenumber}{RGB}{150,150,150}
+\definecolor{codetext}{RGB}{36,41,46}
+\definecolor{codeborder}{RGB}{225,228,232}
+
+\lstdefinestyle{cstyle}{
+    backgroundcolor=\color{codebg},
+    commentstyle=\color{codecomment}\itshape,
+    keywordstyle=\color{codekeyword},
+    numberstyle=\tiny\color{codenumber},
+    stringstyle=\color{codestring},
+    basicstyle=\ttfamily\scriptsize\color{codetext},
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=8pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4,
+    frame=single,
+    framerule=0.5pt,
+    rulecolor=\color{codeborder},
+    xleftmargin=1.5em,
+    framexleftmargin=1em,
+    framextopmargin=4pt,
+    framexbottommargin=4pt,
+    aboveskip=1em,
+    belowskip=0.5em
+}
 
 
 % Your name and student number must be filled in on the title page found in
@@ -56,13 +95,6 @@ The diagram above visually represents the four main stages of the application:
 \end{enumerate}
 
 Macless-Haystack gets rid of the need for any Apple hardware. All you need is an Apple ID with two-factor authentication via SMS and either a linux device or a supported bluetooth enabled microcontroller.
-
-\begin{figure}[ht]
-    \centering
-    \resizebox{\textwidth}{!}{\input{architecture}}
-    \caption{Macless-Haystack Architecture and Data Flow}
-    \label{fig:architecture}
-\end{figure}
 
 \subsection{The Stakeholders}
 The primary stakeholders are the end users who want to track their own Bluetooth devices via Apple's Find My network using Macless-Haystack's web browser. They provide an Apple ID, password, and SMS-based two-factor authentication once when setting up the Macless-Haystack endpoint container, and then interact with the system via a browser to import device key JSON files, view locations, filter by date, and export data. End users are responsible for generating and managing tracker keys and deciding which devices are associated with their Apple ID; they are the primary beneficiaries of the system's tracking functionality.
@@ -107,6 +139,12 @@ The API stores only minimal data, but it logs a significant amount of sensitive 
 
 \subsection{Threat Model}
 The system's privacy properties depend on several trust assumptions. Users must trust Apple's infrastructure to provide end-to-end encryption (though Apple has metadata visibility), the endpoint operator to protect stored credentials and logs, and any third-party Anisette server operator to handle authentication securely. The primary trust boundaries exist at: (1) Bluetooth broadcast between tracker and nearby devices, (2) network communication between frontend and backend (currently vulnerable when HTTP is used), (3) authenticated connections to Apple's servers (which reveal query metadata), and (4) filesystem access on the server (where plaintext credentials are stored). These boundaries represent the main points where information can be compromised, as detailed in the threat analysis below.    
+\begin{figure}[ht]
+    \centering
+    \resizebox{\textwidth}{!}{\includegraphics{../dataflow_diagram.png}}
+    \caption{Macless-Haystack Architecture and Data Flow}
+    \label{fig:architecture}
+\end{figure}
 
 \subsection{LINDDUN Privacy Threat Analysis}
 The following table presents a systematic analysis of privacy threats using the LINDDUN framework, which categorizes threats across privacy dimensions: Linkability, Identifiability, Non-repudiation, Detectability, Disclosure of information, Unawareness, and Non-compliance. Many compliance-related threats stem from the project's reverse-engineering of Apple's proprietary protocol and operation outside Apple's official ecosystem, which cannot be fully resolved without changing the project's purpose.
@@ -179,14 +217,85 @@ SK_i &= \text{KDF}(SK_{i-1}, \text{``update''}, 32) \\
 d_i &= (d_0 * u_i) + v_i \\
 p_i &= d_i * G
 \end{align}
-This requires a small firmware update. The tracker needs to store the master keys and a function to calculate the new ones. This is easy to do on chips like the ESP32 or nrf5x. We tested this and confirmed the tracker can generate new keys every 15 minutes. It should also save the current key to memory so it doesn't lose its place if the battery dies.
+
+This requires a small firmware update. The following code snippet shows the main rolling key logic implemented on the tracker:
+
+\begin{lstlisting}[style=cstyle, language=C, caption={Rolling Key Implementation}]
+/**
+ * @brief Main rolling key logic
+ * 1. Rotate Symmetric Key
+ * 2. Generate u, v scalars
+ * 3. Calculate new Private Key
+ * 4. Derive new Public Key
+ */
+void roll_key_and_update_state() {
+    uint8_t next_sym_key[32];
+    uint8_t diversify_material[72];
+    uint8_t u_bytes[36];
+    uint8_t v_bytes[36];
+    uint8_t rolling_priv_bytes[28];
+    ESP_LOGI(LOG_TAG, "Rolling keys...");
+
+    // 1. Update Symmetric Key: SK_new = KDF(SK_old, "update", 32)
+    ansi_x963_kdf(current_symmetric_key, 32, "update", 32, next_sym_key);
+
+    // global state update
+    memcpy(current_symmetric_key, next_sym_key, 32);
+
+    // 2. Derive u, v: KDF(SK_new, "diversify", 72)
+    ansi_x963_kdf(next_sym_key, 32, "diversify", 72, diversify_material);
+    memcpy(u_bytes, diversify_material, 36);
+    memcpy(v_bytes, diversify_material + 36, 36);
+
+    // 3. Math: d_i = (d_0 * u + v) mod n
+    mbedtls_mpi d_0, u, v, n, d_i, temp;
+    mbedtls_mpi_init(&d_0); mbedtls_mpi_init(&u); mbedtls_mpi_init(&v);
+    mbedtls_mpi_init(&n);   mbedtls_mpi_init(&d_i); mbedtls_mpi_init(&temp);
+
+    mbedtls_mpi_read_string(&n, 16, P224_ORDER_HEX);
+
+    mbedtls_mpi_read_binary(&d_0, master_private_key, 28);
+    mbedtls_mpi_read_binary(&u, u_bytes, 36);
+    mbedtls_mpi_read_binary(&v, v_bytes, 36);
+
+    // temp = d_0 * u
+    mbedtls_mpi_mul_mpi(&temp, &d_0, &u);
+    // d_i = temp + v
+    mbedtls_mpi_add_mpi(&d_i, &temp, &v);
+    // d_i = d_i mod n
+    mbedtls_mpi_mod_mpi(&d_i, &d_i, &n);
+
+    // Export result
+    mbedtls_mpi_write_binary(&d_i, rolling_priv_bytes, 28);
+    ESP_LOGI(LOG_TAG, "New Private Key:");
+    {
+        char key_str[28 * 2 + 1];
+        for (int i = 0; i < 28; i++) {
+            sprintf(&key_str[i * 2], "%02x", rolling_priv_bytes[i]);
+        }
+        key_str[28 * 2] = '\0';
+        ESP_LOGI(LOG_TAG, "%s", key_str);
+    }
+
+    // Cleanup MPI
+    mbedtls_mpi_free(&d_0); mbedtls_mpi_free(&u); mbedtls_mpi_free(&v);
+    mbedtls_mpi_free(&n);   mbedtls_mpi_free(&d_i); mbedtls_mpi_free(&temp);
+
+    // 4. Derive Public Key
+    derive_public_key_bytes(rolling_priv_bytes, 28, current_public_key);
+}
+\end{lstlisting}
+
+The tracker needs to store the master keys and a function to calculate the new ones. The tracker needs to store the master keys and a function to calculate the new ones. This is easy to do on chips like the ESP32 or nrf5x. We tested this approach and confirmed its functionality. Additionally, the tracker should also save the current key to memory so it doesn't lose its place if the battery dies.
 
 \subsubsection{Client-Side Challenges}
-Updating the user application is harder because custom trackers are not as reliable as official AirTags. Official tags are always on, DIY trackers might be turned off for days or weeks. This causes a synchronization problem: when the tracker is off, it resumes from where it stopped, thinking it is an earlier time than it really is. It broadcasts a key that belongs to the past.
-To find the tracker, the application must ask Apple for reports matching a list of possible keys. Normal Apple devices might check a 7-day window. We cannot do this because checking 7 days worth of keys (over 600 requests) is too much. It would likely get the user's account banned by Apple for making too many requests. It also makes the app slow.
-We recommend limiting the rolling rate to 24 hours, this way we can check 7 days worth of keys in 7 requests. Because of the sync issue, if the tracker has been off, the app effectively needs to search through "old" keys to find where the tracker left off. This means finding a device that has been desynchronized for a long time might be slow or difficult to avoid hitting Apple's limits.
-\subsection{Solution to second threat}
+Updating the user application is challenging because custom trackers are less reliable than official AirTags, and users may not open the application for weeks or even months at a time.
 
+As a result, when a user returns to the application after a long period of inactivity, we cannot assume that the current AirTag code is simply the last known code incremented by the elapsed time. The tracker may have been powered off for a significant portion of that period, making the actual code state unpredictable.
+
+This uncertainty forces us to search backward from the estimated current code to the last known code. However, performing this search naively risks triggering Apple server rate limits or bans. Additionally, there is currently no built-in mechanism to resynchronize the tracker with the application.
+
+Resynchronization could be implemented through Bluetooth or NFC, or by integrating an RTC module into the tracker. An RTC would provide accurate timekeeping, allowing the application to reliably calculate code updates even after extended powered off periods\footnote{RTC modules typically include a built-in backup battery to maintain timekeeping when the host device is unpowered. Battery life can range from several months to over ten years, depending on usage. In our use case, the RTC would only draw backup power when the tracker is turned off, resulting in a multi-year battery lifespan.}
 
 \section{Conclusion}
 \todo[inline]{Add conclusion summarizing key findings and recommendations}

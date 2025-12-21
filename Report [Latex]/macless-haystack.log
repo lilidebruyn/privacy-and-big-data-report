@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2026/dev/Arch Linux) (preloaded format=pdflatex 2025.12.15)  20 DEC 2025 12:43
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2026/dev/Arch Linux) (preloaded format=pdflatex 2025.12.15)  21 DEC 2025 10:03
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -587,51 +587,75 @@ File: tikzlibrarybackgrounds.code.tex 2023-01-15 v3.1.10 (3.1.10)
 \pgf@layerboxsaved@background=\box93
 ) (/usr/share/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarycalc.code.tex
 File: tikzlibrarycalc.code.tex 2023-01-15 v3.1.10 (3.1.10)
-) (/usr/share/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
+) (/usr/share/texmf-dist/tex/latex/listings/listings.sty
+\lst@mode=\count335
+\lst@gtempboxa=\box94
+\lst@token=\toks41
+\lst@length=\count336
+\lst@currlwidth=\dimen299
+\lst@column=\count337
+\lst@pos=\count338
+\lst@lostspace=\dimen300
+\lst@width=\dimen301
+\lst@newlines=\count339
+\lst@lineno=\count340
+\lst@maxwidth=\dimen302
+ (/usr/share/texmf-dist/tex/latex/listings/lstpatch.sty
+File: lstpatch.sty 2024/09/23 1.10c (Carsten Heinz)
+) (/usr/share/texmf-dist/tex/latex/listings/lstmisc.sty
+File: lstmisc.sty 2024/09/23 1.10c (Carsten Heinz)
+\c@lstnumber=\count341
+\lst@skipnumbers=\count342
+\lst@framebox=\box95
+) (/usr/share/texmf-dist/tex/latex/listings/listings.cfg
+File: listings.cfg 2024/09/23 1.10c listings configuration
+))
+Package: listings 2024/09/23 1.10c (Carsten Heinz)
+ (/usr/share/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count335
-\l__pdf_internal_box=\box94
+\l__color_backend_stack_int=\count343
+\l__pdf_internal_box=\box96
 ) (./macless-haystack.aux)
 \openout1 = `macless-haystack.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
  (/usr/share/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count336
-\scratchdimen=\dimen299
-\scratchbox=\box95
-\nofMPsegments=\count337
-\nofMParguments=\count338
-\everyMPshowfont=\toks41
-\MPscratchCnt=\count339
-\MPscratchDim=\dimen300
-\MPnumerator=\count340
-\makeMPintoPDFobject=\count341
-\everyMPtoPDFconversion=\toks42
+\scratchcounter=\count344
+\scratchdimen=\dimen303
+\scratchbox=\box97
+\nofMPsegments=\count345
+\nofMParguments=\count346
+\everyMPshowfont=\toks42
+\MPscratchCnt=\count347
+\MPscratchDim=\dimen304
+\MPnumerator=\count348
+\makeMPintoPDFobject=\count349
+\everyMPtoPDFconversion=\toks43
 ) (/usr/share/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
  (/usr/share/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 ))
-Package hyperref Info: Link coloring ON on input line 23.
+Package hyperref Info: Link coloring ON on input line 62.
  (./macless-haystack.out) (./macless-haystack.out)
 \@outlinefile=\write4
 \openout4 = `macless-haystack.out'.
@@ -671,8 +695,9 @@ Package hyperref Info: Link coloring ON on input line 23.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
+\c@lstlisting=\count350
 (./titlepage.tex
-<sedes.pdf, id=95, 310.15875pt x 521.95pt>
+<sedes.pdf, id=91, 310.15875pt x 521.95pt>
 File: sedes.pdf Graphic file (type pdf)
 <use sedes.pdf>
 Package pdftex.def Info: sedes.pdf  used on input line 6.
@@ -691,182 +716,195 @@ Package pdftex.def Info: sedes.pdf  used on input line 6.
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.31 \newpage
-              [1] (./architecture.tex)
+l.70 \newpage
+              [1]
 
 [2]
-Package hyperref Info: bookmark level for unknown todo defaults to 0 on input line 76.
+Package hyperref Info: bookmark level for unknown todo defaults to 0 on input line 108.
+<../dataflow_diagram.png, id=137, 10655.81pt x 8198.63pt>
+File: ../dataflow_diagram.png Graphic file (type png)
+<use ../dataflow_diagram.png>
+Package pdftex.def Info: ../dataflow_diagram.png  used on input line 144.
+(pdftex.def)             Requested size: 10655.78416pt x 8198.61012pt.
 
 
 [3{/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]
-Overfull \hbox (9.69467pt too wide) in paragraph at lines 116--116
+Overfull \hbox (9.69467pt too wide) in paragraph at lines 154--154
 []|\OT1/cmr/bx/n/10 Severity|  
  []
 
 
-Overfull \hbox (9.69467pt too wide) in paragraph at lines 120--120
+Overfull \hbox (9.69467pt too wide) in paragraph at lines 158--158
 []|\OT1/cmr/bx/n/10 Severity|  
  []
 
 
-Overfull \hbox (5.58664pt too wide) in paragraph at lines 125--125
+Overfull \hbox (5.58664pt too wide) in paragraph at lines 163--163
 \OT1/cmr/m/n/10 Compliance|  
  []
 
 
-Overfull \hbox (1.50742pt too wide) in paragraph at lines 125--125
+Overfull \hbox (1.50742pt too wide) in paragraph at lines 163--163
 []|\OT1/cmr/m/n/10 Critical|  
  []
 
 
-Overfull \hbox (5.58664pt too wide) in paragraph at lines 127--127
+Overfull \hbox (5.58664pt too wide) in paragraph at lines 165--165
 \OT1/cmr/m/n/10 Compliance|  
  []
 
 
-Overfull \hbox (1.5589pt too wide) in paragraph at lines 129--129
+Overfull \hbox (1.5589pt too wide) in paragraph at lines 167--167
 []|\OT1/cmr/m/n/10 Linkability 
  []
 
 
-Overfull \hbox (5.58664pt too wide) in paragraph at lines 131--131
+Overfull \hbox (5.58664pt too wide) in paragraph at lines 169--169
 \OT1/cmr/m/n/10 Compliance|  
  []
 
 
-Overfull \hbox (10.44771pt too wide) in paragraph at lines 133--133
+Overfull \hbox (10.44771pt too wide) in paragraph at lines 171--171
 []|\OT1/cmr/m/n/10 Unawareness|  
  []
 
 
-Overfull \hbox (4.53522pt too wide) in paragraph at lines 133--133
+Overfull \hbox (4.53522pt too wide) in paragraph at lines 171--171
 []|\OT1/cmr/m/n/10 Medium|  
  []
 
 
-Overfull \hbox (6.75745pt too wide) in paragraph at lines 135--135
+Overfull \hbox (6.75745pt too wide) in paragraph at lines 173--173
 []|\OT1/cmr/m/n/10 NC.1.2.a|  
  []
 
 
-Overfull \hbox (2.69775pt too wide) in paragraph at lines 135--135
+Overfull \hbox (2.69775pt too wide) in paragraph at lines 173--173
 []|\OT1/cmr/m/n/10 Regulatory 
  []
 
 
-Overfull \hbox (5.58664pt too wide) in paragraph at lines 135--135
+Overfull \hbox (5.58664pt too wide) in paragraph at lines 173--173
 \OT1/cmr/m/n/10 Compliance|  
  []
 
 
-Overfull \hbox (4.53522pt too wide) in paragraph at lines 135--135
+Overfull \hbox (4.53522pt too wide) in paragraph at lines 173--173
 []|\OT1/cmr/m/n/10 Medium|  
  []
 
 
-Overfull \hbox (11.00331pt too wide) in paragraph at lines 137--137
+Overfull \hbox (11.00331pt too wide) in paragraph at lines 175--175
 []|\OT1/cmr/m/n/10 Detectability|  
  []
 
 
-Overfull \hbox (4.53522pt too wide) in paragraph at lines 137--137
+Overfull \hbox (4.53522pt too wide) in paragraph at lines 175--175
 []|\OT1/cmr/m/n/10 Medium|  
  []
 
 
-Overfull \hbox (6.89633pt too wide) in paragraph at lines 139--139
+Overfull \hbox (6.89633pt too wide) in paragraph at lines 177--177
 []|\OT1/cmr/m/n/10 NR.1.1.a|  
  []
 
 
-Overfull \hbox (7.94777pt too wide) in paragraph at lines 139--139
+Overfull \hbox (7.94777pt too wide) in paragraph at lines 177--177
 \OT1/cmr/m/n/10 Repudiation|  
  []
 
 
-Overfull \hbox (4.53522pt too wide) in paragraph at lines 139--139
+Overfull \hbox (4.53522pt too wide) in paragraph at lines 177--177
 []|\OT1/cmr/m/n/10 Medium|  
  []
 
 
-Overfull \hbox (7.313pt too wide) in paragraph at lines 141--141
+Overfull \hbox (7.313pt too wide) in paragraph at lines 179--179
 []|\OT1/cmr/m/n/10 NC.1.2.b|  
  []
 
 
-Overfull \hbox (2.69775pt too wide) in paragraph at lines 141--141
+Overfull \hbox (2.69775pt too wide) in paragraph at lines 179--179
 []|\OT1/cmr/m/n/10 Regulatory 
  []
 
 
-Overfull \hbox (5.58664pt too wide) in paragraph at lines 141--141
+Overfull \hbox (5.58664pt too wide) in paragraph at lines 179--179
 \OT1/cmr/m/n/10 Compliance|  
  []
 
 
-Overfull \hbox (4.53522pt too wide) in paragraph at lines 141--141
+Overfull \hbox (4.53522pt too wide) in paragraph at lines 179--179
 []|\OT1/cmr/m/n/10 Medium|  
  []
 
 
-Overfull \hbox (1.5589pt too wide) in paragraph at lines 143--143
+Overfull \hbox (1.5589pt too wide) in paragraph at lines 181--181
 []|\OT1/cmr/m/n/10 Linkability|  
  []
 
 
-Overfull \hbox (4.53522pt too wide) in paragraph at lines 143--143
+Overfull \hbox (4.53522pt too wide) in paragraph at lines 181--181
 []|\OT1/cmr/m/n/10 Medium|  
  []
 
 
-Overfull \hbox (5.58664pt too wide) in paragraph at lines 145--145
+Overfull \hbox (5.58664pt too wide) in paragraph at lines 183--183
 \OT1/cmr/m/n/10 Compliance|  
  []
 
 
-Overfull \hbox (4.53522pt too wide) in paragraph at lines 145--145
+Overfull \hbox (4.53522pt too wide) in paragraph at lines 183--183
 []|\OT1/cmr/m/n/10 Medium|  
  []
 
 
-Overfull \hbox (6.17001pt too wide) in paragraph at lines 147--147
+Overfull \hbox (6.17001pt too wide) in paragraph at lines 185--185
 []|\OT1/cmr/m/n/10 Information 
  []
 
 
-Overfull \hbox (4.53522pt too wide) in paragraph at lines 147--147
+Overfull \hbox (4.53522pt too wide) in paragraph at lines 185--185
 []|\OT1/cmr/m/n/10 Medium|  
  []
 
 
 
-[4] [5]
+[4 <../dataflow_diagram.png>] [5]
 
 [6]
 
-[7] (./macless-haystack.bbl)
+[7] (/usr/share/texmf-dist/tex/latex/listings/lstlang1.sty
+File: lstlang1.sty 2024/09/23 1.10c listings language file
+) (/usr/share/texmf-dist/tex/latex/listings/lstmisc.sty
+File: lstmisc.sty 2024/09/23 1.10c (Carsten Heinz)
+)
+Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 223.
 
-[8] (./macless-haystack.aux)
+
+[8] (./macless-haystack.bbl)
+
+[9] (./macless-haystack.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
 Package rerunfilecheck Info: File `macless-haystack.out' has not changed.
-(rerunfilecheck)             Checksum: 8102D8D3AF0EE557D7F9B0FDB284DA50;4463.
+(rerunfilecheck)             Checksum: 9FE6B05497AEA3CC919FAB68F972D404;4271.
  ) 
 Here is how much of TeX's memory you used:
- 24774 strings out of 474560
- 482942 string characters out of 5750493
- 938967 words of memory out of 5000000
- 47347 multiletter control sequences out of 15000+600000
- 563009 words of font info for 50 fonts, out of 8000000 for 9000
+ 26409 strings out of 474560
+ 503363 string characters out of 5750493
+ 1652849 words of memory out of 5000000
+ 48896 multiletter control sequences out of 15000+600000
+ 564873 words of font info for 58 fonts, out of 8000000 for 9000
  350 hyphenation exceptions out of 8191
- 99i,11n,101p,1577b,1102s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
-Output written on macless-haystack.pdf (9 pages, 205382 bytes).
+ 99i,10n,101p,1577b,1408s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmitt10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt8.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
+Output written on macless-haystack.pdf (10 pages, 1748326 bytes).
 PDF statistics:
- 260 PDF objects out of 1000 (max. 8388607)
- 218 compressed objects within 3 object streams
- 48 named destinations out of 1000 (max. 500000)
- 194 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 357 PDF objects out of 1000 (max. 8388607)
+ 305 compressed objects within 4 object streams
+ 113 named destinations out of 1000 (max. 500000)
+ 191 words of extra memory for PDF output out of 10000 (max. 10000000)
 
