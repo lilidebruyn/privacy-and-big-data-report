@@ -271,6 +271,109 @@ In the current setup, each tracker continuously broadcasts a beacon containing t
 \\
 \begin{itemize}
     \item \textbf{unit test:} A dedicated testing environment and test suite were developed to evaluate and validate privacy-related behaviors in the tracker firmware, which had not previously undergone testing. To determine if static keys are being utilized, the \texttt{run\_openhaystack} function is called repeatedly while a shim replaces the Bluetooth advertising routine, enabling direct inspection of the broadcast payloads. Static codes are detected if multiple calls to \texttt{run\_openhaystack} trigger the BLE controller with identical payloads.\footnote{The firmware supports the use of multiple static keys; however, it was tested in a configuration where only a single key was loaded.}
+
+    \begin{minipage}[t]{0.48\linewidth}
+    \begin{lstlisting}[style=cstyle, language=C, caption={Unit Test used check if static codes are being used}, basicstyle=\ttfamily\tiny\color{codetext}]
+/**
+ * @brief Test that multiple openhaystack_run calls use the same advertisement data
+ * 
+ * This proves non-rolling behavior by showing that
+ * esp_ble_gap_config_adv_data_raw is called with identical data across multiple runs. 
+ */
+TEST(openhaystack_integration, multiple_runs_same_adv_data_within_cycle)
+{
+    TEST_ASSERT_EQUAL(0, openhaystack_init());
+
+    uint8_t first_call_adv_data[31];
+
+    const uint8_t TEST_REUSE_CYCLES = 5;
+    const uint8_t TEST_DELAY_S = 1;
+
+    for (int i = 0; i <= TEST_REUSE_CYCLES + 1; i++) {
+        openhaystack_run(TEST_DELAY_S, TEST_REUSE_CYCLES);
+
+        // On first iteration, store data
+        if (i == 0) {
+            memcpy(first_call_adv_data, last_adv_data, last_adv_data_len);
+
+        } else if (i <= TEST_REUSE_CYCLES) {
+            // Runs 1..TEST_REUSE_CYCLES should match Run 0
+            TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(
+                first_call_adv_data,
+                last_adv_data,
+                last_adv_data_len,
+                "Advertisement data should match during reuse window"
+            );
+        } else {
+            // i == TEST_REUSE_CYCLES + 1 -> Should have rolled.
+            TEST_ASSERT_NOT_EQUAL(0, memcmp(first_call_adv_data, last_adv_data, last_adv_data_len));
+        }
+    }
+}
+    \end{lstlisting}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.48\linewidth}
+    \begin{lstlisting}[style=cstyle, caption={Unit Test Output illustrating static key reuse}, basicstyle=\ttfamily\tiny\color{codetext}]
+Unity test run 1 of 1
+Macless Haystack Test - Non-Rolling Code Privacy Test Suite
+=============================================================
+
+TEST(openhaystack_integration, multiple_runs_same_adv_data_within_cycle)I (604) BTDM_INIT: BT controller compile version [0f0c5a2]
+I (604) BTDM_INIT: Bluetooth MAC: 0c:b8:15:f6:6c:fe
+I (614) phy_init: phy_version 4791,2c4672b,Dec 20 2023,16:06:06
+I (1044) macless_haystack: OpenHaystack Initializing in STATIC mode
+E (1044) macless_haystack: Found 1 keys
+I (1044) macless_haystack: OpenHaystack initialized with 1 keys
+I (1054) macless_haystack: Loading key with index 0 at address 1
+I (1054) macless_haystack: using key with start 93 44
+I (1064) macless_haystack: using device address: d3 44 54 16 ec 07
+I (1064) macless_haystack: Sending beacon
+I (1174) macless_haystack: Current cycle is 0. Reusing key. 
+I (1274) macless_haystack: Going to sleep
+I (1374) macless_haystack: Loading key with index 0 at address 1
+I (1374) macless_haystack: using key with start 93 44
+I (1374) macless_haystack: using device address: d3 44 54 16 ec 07
+I (1374) macless_haystack: Sending beacon
+I (1484) macless_haystack: Current cycle is 1. Reusing key. 
+I (1584) macless_haystack: Going to sleep
+I (1684) macless_haystack: Loading key with index 0 at address 1
+I (1684) macless_haystack: using key with start 93 44
+I (1684) macless_haystack: using device address: d3 44 54 16 ec 07
+I (1684) macless_haystack: Sending beacon
+I (1794) macless_haystack: Current cycle is 2. Reusing key. 
+I (1894) macless_haystack: Going to sleep
+I (1994) macless_haystack: Loading key with index 0 at address 1
+I (1994) macless_haystack: using key with start 93 44
+I (1994) macless_haystack: using device address: d3 44 54 16 ec 07
+I (1994) macless_haystack: Sending beacon
+I (2104) macless_haystack: Current cycle is 3. Reusing key. 
+I (2204) macless_haystack: Going to sleep
+I (2304) macless_haystack: Loading key with index 0 at address 1
+I (2304) macless_haystack: using key with start 93 44
+I (2304) macless_haystack: using device address: d3 44 54 16 ec 07
+I (2304) macless_haystack: Sending beacon
+I (2414) macless_haystack: Current cycle is 4. Reusing key. 
+I (2514) macless_haystack: Going to sleep
+I (2614) macless_haystack: Loading key with index 0 at address 1
+I (2614) macless_haystack: using key with start 93 44
+I (2614) macless_haystack: using device address: d3 44 54 16 ec 07
+I (2614) macless_haystack: Sending beacon
+I (2724) macless_haystack: Max cycles 5 are reached. Changing key 
+I (2824) macless_haystack: Going to sleep
+I (2924) macless_haystack: Loading key with index 0 at address 1
+I (2924) macless_haystack: using key with start 93 44
+I (2924) macless_haystack: using device address: d3 44 54 16 ec 07
+I (2924) macless_haystack: Sending beacon
+I (3034) macless_haystack: Current cycle is 0. Reusing key. 
+I (3134) macless_haystack: Going to sleep
+./main/main.c:119::FAIL: Expected Not-Equal
+
+-----------------------
+1 Tests 1 Failures 0 Ignored 
+FAIL
+    \end{lstlisting}
+    \end{minipage}
 \end{itemize}
 \subsubsection{HTTP Communication}
 The current Macless Haystack server implementation allows the endpoint to run over unencrypted HTTP when TLS certificates are not configured. The code checks for the presence of certificate files and falls back to HTTP if they are missing. This creates a security risk because all communication between client and server occurs in plaintext, making it vulnerable to network sniffing and man-in-the-middle attacks. An attacker on the same network can intercept and read all traffic, including Basic Authentication credentials that are only Base64-encoded and easily decoded.
@@ -479,8 +582,8 @@ The server should enforce HTTPS and not allow HTTP fallback when TLS certificate
 All sensitive credentials, including authentication tokens stored in auth.json and passwords in config.ini, should be encrypted at rest using a symmetric encryption algorithm. Currently, these credentials are stored in plaintext files that can be read directly by anyone with file system access.An encryption module should be implemented that automatically encrypts credentials when they are written to files and decrypts them when they are read. The master encryption key should be stored securely with restricted file permissions, and encrypted credential files should also have restricted permissions to prevent unauthorized access. A migration script could be provided to convert existing plaintext files to encrypted format, allowing existing deployments to be upgraded without data loss.
 
 
-\subsection{Handeling the GDPR and EULA violations}
-
+\subsection{Handling the GDPR and EULA Violations}
+Our recommended solution to the GDPR and EULA violations is to obtain explicit consent from the user regarding the use of the application and the collection of their data. Additionally, it is crucial to inform the user that the use of this application is at their own risk. Users are advised to host the Macless-Haystack server themselves and should be fully aware of the privacy implications associated with this application.
 
 \section{Conclusion}
 \todo[inline]{Add conclusion summarizing key findings and recommendations}
