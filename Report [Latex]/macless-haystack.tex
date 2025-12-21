@@ -93,6 +93,13 @@ At a high level, the Find My trackers broadcast identifiers, which can be detect
 
 Figure~\ref{fig:macless-haystack} below visually represents the four main stages of the application:
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/applicationoverview.png}
+    \caption{High-level overview of the macless-haystack / apple airtag application \cite{DBLP:journals/corr/abs-2103-02282}}
+    \label{fig:macless-haystack}
+\end{figure}
+
 \begin{enumerate}
     \item \textbf{Pair through initial setup}: The process begins with the owner pairing their device, this means generating a unique private-public key pair. These keys are programmed onto supported Bluetooth devices.
     \item \textbf{Broadcast}: After setup, the tracker begins broadcasting Bluetooth advertisements that are based on its public key. Apple devices nearby act as a finder device and can pick up on these advertisements.
@@ -101,13 +108,6 @@ Figure~\ref{fig:macless-haystack} below visually represents the four main stages
 \end{enumerate}
 
 Macless-Haystack gets rid of the need for any Apple hardware. All you need is an Apple ID with two-factor authentication via SMS and either a linux device or a supported bluetooth enabled microcontroller.
-
-\begin{figure}[]
-    \centering
-    \includegraphics[width=0.8\textwidth]{figures/applicationoverview.png}
-    \caption{High-level overview of the Macless-Haystack workflow}
-    \label{fig:macless-haystack}
-\end{figure}
 
 
 \subsection{The Stakeholders}
@@ -121,6 +121,50 @@ The Anisette server operator runs the separate Anisette-compatible service that 
 \bigskip
 
 Apple is an indirect but essential stakeholder, as its Find My and iCloud infrastructure receives the encrypted location reports from nearby Apple devices and serves them to the Macless-Haystack endpoint authenticated with an Apple ID.
+%--------- diagram van stakeholders and trust bounderies
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[
+        node distance=1.5cm and 2cm,
+        entity/.style={rectangle, draw=black, thick, fill=white, rounded corners, minimum height=1cm, align=center, font=\small},
+        boundary/.style={dashed, red, thick},
+        link/.style={->, >=latex, thick},
+        labeltext/.style={font=\footnotesize\itshape}
+    ]
+
+    % Nodes
+    \node[entity, fill=blue!10] (tracker) {Tracker\\(Beacon)};
+    \node[entity, right=of tracker, fill=gray!20] (finder) {Finder Device\\(Apple)};
+    \node[entity, right=of finder, fill=gray!10] (apple) {Apple Servers\\(iCloud)};
+    
+    \node[entity, below=of apple, fill=green!10] (endpoint) {Macless-Haystack\\Endpoint};
+    \node[entity, right=of endpoint, fill=orange!10] (anisette) {Anisette\\Server};
+    
+    \node[entity, below=of endpoint, fill=yellow!10] (user) {End User\\(Browser)};
+
+    % Edges
+    \draw[link] (tracker) -- node[above, labeltext] {Adv. Key} (finder);
+    \draw[link] (finder) -- node[above, labeltext] {Loc. Report} (apple);
+    \draw[link] (endpoint) -- node[left, labeltext] {Fetch Loc. Report} (apple);
+    \draw[link] (endpoint) -- node[above, labeltext] {Auth} (anisette);
+    \draw[link] (user) -- node[right, labeltext] {} (endpoint);
+
+    % Trust Boundaries
+    
+    % Public Trust (Tracker Output + Apple Infrastructure)
+    \begin{scope}[on background layer]
+        \node[fit=(finder)(apple), draw=red, dashed, inner sep=0.3cm, label={[red]above:Public Trust}] {};
+    \end{scope}
+
+    % Operator Trust
+    \begin{scope}[on background layer]
+        \node[fit=(endpoint)(anisette), draw=orange, dashed, inner sep=0.3cm, label={[orange]left:Operator Trust}] {};
+    \end{scope}
+
+    \end{tikzpicture}
+    \caption{Stakeholders and Trust Boundaries Diagram}
+    \label{fig:architecture}
+\end{figure}
 
 \subsection{Types of Data Collected and Purposes}
 
@@ -172,12 +216,6 @@ The API stores only minimal data, but it logs a significant amount of sensitive 
 
 \subsection{Threat Model}
 The system's privacy properties depend on several trust assumptions. Users must trust Apple's infrastructure to provide end-to-end encryption (though Apple has metadata visibility), the endpoint operator to protect stored credentials and logs, and any third-party Anisette server operator to handle authentication securely. The primary trust boundaries exist at: (1) Bluetooth broadcast between tracker and nearby devices, (2) network communication between frontend and backend (currently vulnerable when HTTP is used), (3) authenticated connections to Apple's servers (which reveal query metadata), and (4) filesystem access on the server (where plaintext credentials are stored). These boundaries represent the main points where information can be compromised, as detailed in the threat analysis below.    
-\begin{figure}[ht]
-    \centering
-    \resizebox{\textwidth}{!}{\includegraphics{figures/dataflow_diagram.png}}
-    \caption{Macless-Haystack Architecture and Data Flow}
-    \label{fig:architecture}
-\end{figure}
 
 \subsection{LINDDUN Privacy Threat Analysis}
 The following table (Table~\ref{tab:lindunn}) presents a systematic analysis of privacy threats using the LINDDUN framework, which categorizes threats across privacy dimensions: Linkability, Identifiability, Non-repudiation, Detectability, Disclosure of information, Unawareness, and Non-compliance. Many compliance-related threats stem from the project's reverse-engineering of Apple's proprietary protocol and operation outside Apple's official ecosystem, which cannot be fully resolved without changing the project's purpose.
@@ -219,8 +257,20 @@ NC.3.b & Non-Compliance & HTTP access is supported (non-mandatory HTTPS), exposi
 I.1.2 & Information Disclosure & Apple servers receive query metadata (timestamps, query frequency, advertisement key hashes) revealing usage patterns. & Interaction 20, 21 & Medium & Inherent to protocol; rate limiting and query batching can reduce exposure \\
 \hline
 \end{longtable}
+\subsection{Main Identified Privacy Threats}
+\subsubsection{Advertisement Keys in Macless Haystack}
+In the current setup, each tracker continuously broadcasts a beacon containing the same static public key so that nearby Apple devices can hear it and create encrypted location reports. Any Apple device that receives such a beacon, takes its own location and encrypts that location to send it to Apple's servers, where only the trackers matching private key can decrypt it. Using a static public key introduces a serious linkability privacy problem. Because the same identifier is broadcasted in every packet, any nearby device with a simple BLE sniffer can record this constant over time and across different places, and then correlate all sightings as belonging to the same physical tracker. This means that anyone could build a detailed movement profile of the tagged object or person just by re-observing the same static key at different locations, even though they cannot decrypt the underlying Find My location reports. The root cause of the privacy threat is therefore not that the encryption is weak, it is that the identifier used as input to the encrypted reporting process is long-lived and public. The encryption protects the content of each report from being read, but it does nothing to stop third parties from recognizing that "this is the same beacon as yesterday" and inferring sensitive patterns (home, workplace, daily routines) purely from repeated radio observations tied to an unchanging public key.
+\\
+\begin{itemize}
+    \item \textbf{unit test:} A dedicated testing environment and test suite were developed to evaluate and validate privacy-related behaviors in the tracker firmware, which had not previously undergone testing. To determine if static keys are being utilized, the \texttt{run\_openhaystack} function is called repeatedly while a shim replaces the Bluetooth advertising routine, enabling direct inspection of the broadcast payloads. Static codes are detected if multiple calls to \texttt{run\_openhaystack} trigger the BLE controller with identical payloads.\footnote{The firmware supports the use of multiple static keys; however, it was tested in a configuration where only a single key was loaded.}
+\end{itemize}
+\subsubsection{Plain Text Credentials}
+The user's Apple ID credentials are stored in plaintext on the Macless-Haystack server inside the auth.json file. This means that anyone with file access to the server can read the user's credentials. This represents a serious security vulnerability that must be addressed immediately, especially when the server and client are managed by different individuals. Additionally, the frontend website is not protected by HTTPS, and communication between the frontend and the Macless-Haystack server is transmitted without encryption. This creates a severe security risk if a user enters their credentials for the Macless-Haystack server into the frontend, as the information would be sent over the network unencrypted. While the current implementation does not require users to enter their credentials, since they are provided during server setup, an uninformed user might still attempt to do so. In scenarios where the server is configured by a third party, entering credentials through the website may even be necessary for the system to function, further increasing the risk.
 
-\subsection{GDPR Compliance Considerations}
+\todo[inline]{Add unit test for plain text credentials}
+
+
+\subsubsection{GDPR Compliance}
 To assess GDPR compliance, we analyze the system based on the data controllers involved, the personal data they process, and the specific regulatory risks they face.
 
 \subsubsection{Data Controllers, Personal Data, and Risks}
@@ -271,26 +321,10 @@ Apple processes the encrypted location reports and public advertisement keys upl
 \subsubsection{Disclaimer on Research Usage}
 It is important to note that this application is intended as a proof-of-concept research project. The project repository includes a disclaimer stating: "I take NO responsibility and/or liability for how you choose to use any of the source code available here. By using any of the files available in this repository, you understand that you are AGREEING TO USE AT YOUR OWN RISK. Once again, ALL files available here are for EDUCATION and/or RESEARCH purposes ONLY." 
 Consequently, operators hosting an endpoint should be aware of these risks and limit usage to personal research or household activities, avoiding deployment as a general-purpose service.
-\subsection{Main Identified Privacy Threats}
-
-\subsubsection{Advertisement Keys in Macless Haystack}
-In the current setup, each tracker continuously broadcasts a beacon containing the same static public key so that nearby Apple devices can hear it and create encrypted location reports. Any Apple device that receives such a beacon, takes its own location and encrypts that location to send it to Apple's servers, where only the trackers matching private key can decrypt it. Using a static public key introduces a serious linkability privacy problem. Because the same identifier is broadcasted in every packet, any nearby device with a simple BLE sniffer can record this constant over time and across different places, and then correlate all sightings as belonging to the same physical tracker. This means that anyone could build a detailed movement profile of the tagged object or person just by re-observing the same static key at different locations, even though they cannot decrypt the underlying Find My location reports. The root cause of the privacy threat is therefore not that the encryption is weak, it is that the identifier used as input to the encrypted reporting process is long-lived and public. The encryption protects the content of each report from being read, but it does nothing to stop third parties from recognizing that "this is the same beacon as yesterday" and inferring sensitive patterns (home, workplace, daily routines) purely from repeated radio observations tied to an unchanging public key.
-\\
-\begin{itemize}
-    \item \textbf{unit test:} A dedicated testing environment and test suite were developed to evaluate and validate privacy-related behaviors in the tracker firmware, which had not previously undergone testing. To determine if static keys are being utilized, the \texttt{run\_openhaystack} function is called repeatedly while a shim replaces the Bluetooth advertising routine, enabling direct inspection of the broadcast payloads. Static codes are detected if multiple calls to \texttt{run\_openhaystack} trigger the BLE controller with identical payloads.\footnote{The firmware supports the use of multiple static keys; however, it was tested in a configuration where only a single key was loaded.}
-\end{itemize}
-\subsubsection{Plain Text Credentials}
-The user's Apple ID credentials are stored in plaintext on the Macless-Haystack server inside the auth.json file. This means that anyone with file access to the server can read the user's credentials. This represents a serious security vulnerability that must be addressed immediately, especially when the server and client are managed by different individuals. Additionally, the frontend website is not protected by HTTPS, and communication between the frontend and the Macless-Haystack server is transmitted without encryption. This creates a severe security risk if a user enters their credentials for the Macless-Haystack server into the frontend, as the information would be sent over the network unencrypted. While the current implementation does not require users to enter their credentials, since they are provided during server setup, an uninformed user might still attempt to do so. In scenarios where the server is configured by a third party, entering credentials through the website may even be necessary for the system to function, further increasing the risk.
-
-\todo[inline]{Add unit test for plain text credentials}
 
 
 % Part 3: Recommendations (no specific word limit mentioned, but part of 4000 word total)
 \section{Recommendations}
-\subsection{Handeling the GDPR and EULA violations}
-
-
-
 \subsection{Mitigating Linkability with Rolling Codes}
 Static advertisement keys allow anyone to track a device by listening for its constant signal. To fix this, we recommend using rolling codes, which means the key changes periodically (for example, every 15 minutes). This prevents strangers from linking different signals to the same device, but the owner can still find it because they have the secret key to calculate the list of all past and future IDs.\\
 To prevent this we can use the same method as Apple's official airtags \cite{DBLP:journals/corr/abs-2103-02282}. This uses Elliptic Curve Cryptography on the NIST P-224 curve. It starts with a master key pair and a 32-bit symmetric key. New keys are created using the ANSI X.963 key derivation function (KDF) with these formulas:
@@ -379,6 +413,9 @@ As a result, when a user returns to the application after a long period of inact
 This uncertainty forces us to search backward from the estimated current code to the last known code. However, performing this search naively risks triggering Apple server rate limits or bans. Additionally, there is currently no built-in mechanism to resynchronize the tracker with the application.
 
 Resynchronization could be implemented through Bluetooth or NFC, or by integrating an RTC module into the tracker. An RTC would provide accurate timekeeping, allowing the application to reliably calculate code updates even after extended powered off periods\footnote{RTC modules typically include a built-in backup battery to maintain timekeeping when the host device is unpowered. Battery life can range from several months to over ten years, depending on usage. In our use case, the RTC would only draw backup power when the tracker is turned off, resulting in a multi-year battery lifespan.}
+
+\subsection{Handeling the GDPR and EULA violations}
+
 
 \section{Conclusion}
 \todo[inline]{Add conclusion summarizing key findings and recommendations}
