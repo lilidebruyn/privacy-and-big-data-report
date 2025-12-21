@@ -661,7 +661,9 @@ All sensitive credentials, including authentication tokens stored in auth.json a
 
 
 \subsection{Handling the GDPR and EULA Violations}
-Our recommended solution to the GDPR and EULA violations is to obtain explicit consent from the user regarding the use of the application and the collection of their data. Additionally, it is crucial to inform the user that the use of this application is at their own risk. Users are advised to host the Macless-Haystack server themselves and should be fully aware of the privacy implications associated with this application.
+Our recommended solution to the GDPR and EULA violations is to obtain explicit consent from the user regarding the use of the application and the collection of their data. Additionally, it is crucial to inform users that the application is used at their own risk, and that they are advised to host the Macless-Haystack server themselves while being fully aware of the privacy implications associated with this application.
+
+A similar disclaimer is included in the GitHub README; however, this information should also be incorporated directly into the application itself, together with a clear consent form.
 \newpage
 \section{Conclusion}
 This privacy impact assessment evaluated Macless-Haystack, an open-source project that enables users access to Apple's 'Find My' network without requiring Apple hardware and thus processes sensitive location-related data and authentication credentials. The assessment identified linkability through static advertisement keys as the primary risk, because persistent Bluetooth identifiers allow passive tracking despite there being strong encryption of local reports. Additional risks identified are plaintext credential storage and optional unencrypted communication.
