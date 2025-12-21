@@ -275,7 +275,7 @@ I.1.2 & Information Disclosure & Apple servers receive query metadata (timestamp
 In the current setup, each tracker continuously broadcasts a beacon containing the same static public key so that nearby Apple devices can hear it and create encrypted location reports. Any Apple device that receives such a beacon, takes its own location and encrypts that location to send it to Apple's servers, where only the trackers matching private key can decrypt it. Using a static public key introduces a serious linkability privacy problem. Because the same identifier is broadcasted in every packet, any nearby device with a simple BLE sniffer can record this constant over time and across different places, and then correlate all sightings as belonging to the same physical tracker. This means that anyone could build a detailed movement profile of the tagged object or person just by re-observing the same static key at different locations, even though they cannot decrypt the underlying 'Find My' location reports. The root cause of the privacy threat is therefore not that the encryption is weak, it is that the identifier used as input to the encrypted reporting process is long-lived and public. The encryption protects the content of each report from being read, but it does nothing to stop third parties from recognizing that "this is the same beacon as yesterday" and inferring sensitive patterns (home, workplace, daily routines) purely from repeated radio observations tied to an unchanging public key.
 \\
 \\
-Additionally, if Apple is considered an untrustworthy entity, the reliance on static keys exacerbates the linkability risk. By analyzing the metadata accompanying location reports—such as the static advertisement key and the finding device's IP address—Apple could infer the user's approximate location and reconstruct movement patterns or daily routines.
+Additionally, if Apple is considered an untrustworthy entity, the reliance on static keys increases the linkability risk. By analyzing the metadata accompanying location reports, such as the static advertisement key and the finding device's IP address, Apple could infer the user's approximate location and reconstruct movement patterns or daily routines.
 \\
 \begin{itemize}
     \item \textbf{unit test:} A dedicated testing environment and test suite were developed to evaluate and validate privacy-related behaviors in the tracker firmware, which had not previously undergone testing. To determine if static keys are being utilized, the \texttt{run\_openhaystack} function is called repeatedly while a shim replaces the Bluetooth advertising routine, enabling direct inspection of the broadcast payloads. Static codes are detected if multiple calls to \texttt{run\_openhaystack} trigger the BLE controller with identical payloads.\footnote{The firmware supports the use of multiple static keys; however, it was tested in a configuration where only a single key was loaded.}
@@ -446,63 +446,32 @@ class TestCredentialStorage(unittest.TestCase):
 
 
 \subsubsection{GDPR Compliance}
-To assess GDPR compliance, we analyze the system based on the data controllers involved, the personal data they process, and the specific regulatory risks they face.
-
-\subsubsection{Data Controllers, Personal Data, and Risks}
-
-\paragraph{The End User}
-The individual user acts as a data controller because they generate the private keys and define the purpose of the tracking (i.e., deciding which objects or individuals to track).
-
-\textbf{Personal Data Processed:} Private keys, definitions of tracked objects.
-
-\textbf{GDPR Risks:}
-
-\textbf{Household Exemption:} Generally, for purely personal or household activities, the GDPR may not apply under the \textit{household exemption} (Article 2(2)(c)). However, if the user tracks individuals outside of a household context, they become fully liable.
-
-\textbf{Integrity and Confidentiality (Article 5 and Article 32):} The generation of private keys is currently insecure. Before flashing, keys are stored in plaintext JSON and must be imported into the application, preventing the use of secure platform storage (e.g., Keychain, Gnome Keyring).
-
-\textbf{Lawfulness of Processing (Article 6):} The system circumvents Apple's built-in anti-stalking protections. This allows users to track individuals or objects without consent more easily than within the official ecosystem, raising significant ethical and legal concerns regarding non-consensual surveillance.
-
-\paragraph{The Macless-Haystack Endpoint Operator}
-The operator of the Macless-Haystack instance acts as the primary data controller for the deployment. They hold the most personal data.
-
-\textbf{Personal Data Processed:}
-
-\emph{Account Credentials:} Apple ID and Password, and derived tokens (DSID, SearchPartyToken, etc.).
-
-\emph{Target Search Data:} Search Keys (IDs) for specific devices.
-
-\emph{Location Data:} Encrypted location reports, decoded metadata, and raw payloads.
-
-\emph{Logged Data:} Debug logs potentially persisting sensitive information.
-
-\textbf{GDPR Risks \& Violations:}
-
-\textbf{Integrity and Confidentiality:} There are critical failures regarding security. Apple ID credentials can be stored in plaintext (e.g., in \texttt{config.ini}), and the frontend supports unencrypted HTTP communication. This exposes potentially personal data to unauthorized access. (it becomes personal data if the middleman is able to link the data to a specific person, eg has the private key or is able to physically track the device using its static key advertisements)
-
-\textbf{Transparency and Purpose Limitation:} A major deficiency is the lack of transparency. The end user (if different from the operator) is often not informed about the processing of their data, and there is no documented purpose specification. If static keys are used, the end user should also be informed that Apple might process personal data, depending on if Apple can link the static keys to a specific person.
-
-\paragraph{Apple}
-Apple processes the encrypted location reports and public advertisement keys uploaded by finder devices.
-
-\textbf{Personal Data Processed:} Encrypted location reports, advertisement keys, uploader IP addresses/Apple IDs.
-
-\textbf{GDPR Risks:}
-
-\textbf{Linkability:} In a self-hosted setup where the tracker owner is the endpoint operator, Apple could link the tracker to the owner's Apple ID, making the data personal.
-
-\textbf{Mitigation:} If rolling keys are used, Apple's ability to link reports to a single device is significantly reduced, arguing for a lack of personal data processing in that specific context.
-
-\subsubsection{Disclaimer on Research Usage}
-It is important to note that this application is intended as a proof-of-concept research project. The project repository includes a disclaimer stating: "I take NO responsibility and/or liability for how you choose to use any of the source code available here. By using any of the files available in this repository, you understand that you are AGREEING TO USE AT YOUR OWN RISK. Once again, ALL files available here are for EDUCATION and/or RESEARCH purposes ONLY." 
-Consequently, operators hosting an endpoint should be aware of these risks and limit usage to personal research or household activities, avoiding deployment as a general-purpose service.
-
+To assess GDPR compliance, we analyze the system based on the data controllers involved, the personal data they process.
+\begin{table}[H]
+    \centering
+    \caption{GDPR Stakeholder Analysis}
+    \label{tab:gdpr_stakeholders}
+    \begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}p{2.5cm}|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|}
+        \hline
+        \textbf{Data controller} & \textbf{Personal Data Processed} & \textbf{GDPR Risks \& Violations} \\ \hline
+        \textbf{The End User} & Private keys, tracked objects. & 
+        \textbf{Household Exemption:} Generally, for purely personal/household activities, GDPR may not apply (Art 2(2)(c)). \newline
+        \textbf{Integrity (Art 5, 32):} Insecure key storage (plaintext JSON). \newline
+        \textbf{Lawfulness (Art 6):} Circumvents anti-stalking protections; risks of non-consensual surveillance. \\ \hline
+        \textbf{Endpoint Operator} & endpoint operators: Apple ID, Password\newline users meta data: Encrypted reports, timestamps, debug logs (with Advertisement Keys). & 
+        \textbf{Integrity \& Confidentiality:} Critical failures (plaintext credentials, unencrypted HTTP). Data becomes personal if linked to a specific person.\newline
+        \textbf{Transparency:} End user often uninformed about data processing; no documented purpose specification. \\ \hline
+        \textbf{Apple} & Encrypted location reports, advertisement keys & 
+        \textbf{Linkability:} In self-hosted setups, Apple could link the tracker to the owner's Apple ID.\newline
+        \textbf{Mitigation:} Rolling keys significantly reduce the ability to link reports to a single device. \\ \hline
+    \end{tabularx}
+\end{table}
 
 % Part 3: Recommendations (no specific word limit mentioned, but part of 4000 word total)
 \section{Recommendations}
 \subsection{Mitigating Linkability with Rolling Codes}
-Static advertisement keys allow anyone to track a device by listening for its constant signal. To fix this, we recommend using rolling codes, which means the key changes periodically (for example, every 15 minutes). This prevents strangers from linking different signals to the same device, but the owner can still find it because they have the secret key to calculate the list of all past and future IDs.\\
-To prevent this we can use the same method as Apple's official airtags \cite{DBLP:journals/corr/abs-2103-02282}. This uses Elliptic Curve Cryptography on the NIST P-224 curve. It starts with a master key pair and a 32-bit symmetric key. New keys are created using the ANSI X.963 key derivation function (KDF) with these formulas:
+Static advertisement keys allow anyone to track a device by listening for its BLE signal. To fix this, we recommend using rolling codes, which means the key changes periodically (for example, every 24 hours). This prevents strangers from linking different packets to the same device, but the owner can still find it because they have the secret key to calculate the list of all past and future advertisement keys.\\
+To prevent this we can use the same method as Apple's official airtags \cite{DBLP:journals/corr/abs-2103-02282}. This uses Elliptic Curve Cryptography on the NIST P-224 curve. It starts with a master key pair and a 32-bit symmetric key. New keys are created using the ANSI X.963 key derivation function (KDF) with these formulas \cite{DBLP:journals/corr/abs-2103-02282}:
 \begin{align}
 SK_i &= \text{KDF}(SK_{i-1}, \text{``update''}, 32) \\
 (u_i, v_i) &= \text{KDF}(SK_i, \text{``diversify''}, 72) \\
@@ -511,8 +480,8 @@ p_i &= d_i * G
 \end{align}
 
 This requires a small firmware update. The following code snippet shows the main rolling key logic implemented on the tracker:
-The tracker needs to store the master keys and a function to calculate the new ones. The tracker needs to store the master keys and a function to calculate the new ones. This is easy to do on chips like the ESP32 or nrf5x. We tested this approach and confirmed its functionality. Additionally, the tracker should also save the current key to memory so it doesn't lose its place if the battery dies.
-The major downside of this approach is that if the key-rolling interval is set to a short value, the tracker can evade Apple’s built-in anti-stalking features. As a result, unlike regular AirTags, people may not receive alerts when an unknown tracker is following them allowing \cite{10.1145/3463676.3485616}.
+The tracker needs to store the master keys and a function to calculate the new ones. This is easy to do on chips like the ESP32 or nrf5x. We tested this approach and confirmed its functionality. Additionally, the tracker should also save the current key to memory so it doesn't break the sequence of keys if the battery dies.\\
+The major downside of this approach is that if the key-rolling interval is set to a short value, the tracker could evade Apple’s built-in anti-stalking features. As a result, unlike regular AirTags, people may not receive alerts when an unknown tracker is following them \cite{10.1145/3463676.3485616}.
 
 \begin{minipage}[t]{0.48\linewidth}
 \begin{lstlisting}[style=cstyle, language=C, caption={Rolling Key Implementation }, basicstyle=\ttfamily\tiny\color{codetext}]
@@ -658,13 +627,12 @@ OK
 \end{minipage}
 \footnote{The ESP SDK's CI/CD tools are limitted and testing needs to be done on the tracker. This is the reason the test logs include so many log messages.}
 \subsubsection{Client-Side Challenges}
-Updating the user application is challenging because custom trackers are less reliable than official AirTags, and users may not open the application for weeks or even months at a time.
+Updating the user application is challenging because custom trackers are less reliable than official AirTags, users may not open the application for weeks or even months at a time.
 
-As a result, when a user returns to the application after a long period of inactivity, we cannot assume that the current AirTag code is simply the last known code incremented by the elapsed time. The tracker may have been powered off for a significant portion of that period, making the actual code state unpredictable.
+As a result, when a user returns to the application after a long period of inactivity, we cannot assume that the current advertisement key is simply the last known key incremented by the elapsed time. The tracker may have been powered off for a significant portion of that period, making the actual key state unpredictable.
 
-This uncertainty forces us to search backward from the estimated current code to the last known code. However, performing this search naively risks triggering Apple server rate limits or bans. Additionally, there is currently no built-in mechanism to resynchronize the tracker with the application.
-
-Resynchronization could be implemented through Bluetooth or NFC, or by integrating an RTC module into the tracker. An RTC would provide accurate timekeeping, allowing the application to reliably calculate code updates even after extended powered off periods\footnote{RTC modules typically include a built-in backup battery to maintain timekeeping when the host device is unpowered. Battery life can range from several months to over ten years, depending on usage. In our use case, the RTC would only draw backup power when the tracker is turned off, resulting in a multi-year battery lifespan.}
+This uncertainty forces us to search backward from the estimated current key to the last known key. However, performing this search naively risks triggering Apple server rate limits or bans.
+The unreliability of the tracker can be mitigated by integrating an RTC module into the tracker. An RTC would provide accurate timekeeping, allowing the application to reliably calculate key updates even after extended powered off periods\footnote{RTC modules typically include a built-in backup battery to maintain timekeeping when the host device is unpowered. Battery life can range from several months to over ten years, depending on usage.}
 \subsection{HTTPS Enforcement}
 The server should enforce HTTPS and not allow HTTP fallback when TLS certificates are missing. Currently, the server falls back to unencrypted HTTP if certificate files are not found. The server startup should check for both the TLS certificate and private key files, and terminate with a clear error message if either is missing, rather than falling back to HTTP. This prevents accidental deployment of an unencrypted server and ensures administrators are aware of the security requirement. For development and testing, a helper script should be provided to generate self-signed certificates, but production deployments should use certificates from a trusted certificate authority.
 An small assertion can be added to the server to check if the certificate is there, and if not, the server should exit with an error message. This prevents the server from running without a certificate.
@@ -693,7 +661,9 @@ All sensitive credentials, including authentication tokens stored in auth.json a
 
 
 \subsection{Handling the GDPR and EULA Violations}
-Our recommended solution to the GDPR and EULA violations is to obtain explicit consent from the user regarding the use of the application and the collection of their data. Additionally, it is crucial to inform the user that the use of this application is at their own risk. Users are advised to host the Macless-Haystack server themselves and should be fully aware of the privacy implications associated with this application.
+Our recommended solution to the GDPR and EULA violations is to obtain explicit consent from the user regarding the use of the application and the collection of their data. Additionally, it is crucial to inform users that the application is used at their own risk, and that they are advised to host the Macless-Haystack server themselves while being fully aware of the privacy implications associated with this application.
+
+A similar disclaimer is included in the GitHub README; however, this information should also be incorporated directly into the application itself, together with a clear consent form.
 \newpage
 \section{Conclusion}
 This privacy impact assessment evaluated Macless-Haystack, an open-source project that enables users access to Apple's 'Find My' network without requiring Apple hardware and thus processes sensitive location-related data and authentication credentials. The assessment identified linkability through static advertisement keys as the primary risk, because persistent Bluetooth identifiers allow passive tracking despite there being strong encryption of local reports. Additional risks identified are plaintext credential storage and optional unencrypted communication.
