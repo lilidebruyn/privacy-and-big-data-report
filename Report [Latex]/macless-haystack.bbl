@@ -1,8 +1,22 @@
 \begin{thebibliography}{1}
 
+\bibitem{maclesshaystack}
+dchristl.
+\newblock Macless-haystack.
+\newblock GitHub repository. Available at:
+  \url{https://github.com/dchristl/macless-haystack}. Accessed: 20 December
+  2025.
+
 \bibitem{DBLP:journals/corr/abs-2103-02282}
 Alexander Heinrich, Milan Stute, Tim Kornhuber, and Matthias Hollick.
-\newblock Who can find my devices? security and privacy of apple's crowd-sourced bluetooth location tracking system.
+\newblock Who can find my devices? security and privacy of apple's
+  crowd-sourced bluetooth location tracking system.
 \newblock {\em CoRR}, abs/2103.02282, 2021.
+
+\bibitem{openhaystack}
+seemoo lab.
+\newblock Openhaystack.
+\newblock GitHub repository. Available at:
+  \url{https://github.com/seemoo-lab/openhaystack}. Accessed: 20 December 2025.
 
 \end{thebibliography}

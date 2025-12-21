@@ -2,21 +2,21 @@
 \contentsline {section}{\numberline {1}Introduction}{2}{section.1}%
 \contentsline {section}{\numberline {2}Application Description}{2}{section.2}%
 \contentsline {subsection}{\numberline {2.1}Functionality of the Application}{2}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}The Stakeholders}{2}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.2}The Stakeholders}{3}{subsection.2.2}%
 \contentsline {subsection}{\numberline {2.3}Types of Data Collected and Purposes}{3}{subsection.2.3}%
 \contentsline {subsubsection}{\numberline {2.3.1}Data Collection in the Tracker}{3}{subsubsection.2.3.1}%
 \contentsline {subsubsection}{\numberline {2.3.2}Data Collection in Apple's System}{3}{subsubsection.2.3.2}%
-\contentsline {subsubsection}{\numberline {2.3.3}Data Collected by the Macless-Haystack Application}{3}{subsubsection.2.3.3}%
-\contentsline {subsubsection}{\numberline {2.3.4}Data Collected by the Macless-Haystack API}{3}{subsubsection.2.3.4}%
-\contentsline {section}{\numberline {3}Privacy Impact Assessment}{3}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Threat Model}{3}{subsection.3.1}%
+\contentsline {subsubsection}{\numberline {2.3.3}Data Collected by the Macless-Haystack Application}{4}{subsubsection.2.3.3}%
+\contentsline {subsubsection}{\numberline {2.3.4}Data Collected by the Macless-Haystack API}{4}{subsubsection.2.3.4}%
+\contentsline {section}{\numberline {3}Privacy Impact Assessment}{4}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Threat Model}{4}{subsection.3.1}%
 \contentsline {subsection}{\numberline {3.2}LINDDUN Privacy Threat Analysis}{4}{subsection.3.2}%
 \contentsline {subsection}{\numberline {3.3}GDPR Compliance Considerations}{7}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}Main Identified Privacy Threats}{7}{subsection.3.4}%
-\contentsline {subsubsection}{\numberline {3.4.1}Advertisement Keys in Macless Haystack}{7}{subsubsection.3.4.1}%
-\contentsline {subsubsection}{\numberline {3.4.2}Unit Test for Rolling Codes}{7}{subsubsection.3.4.2}%
-\contentsline {subsubsection}{\numberline {3.4.3}Plain Text Credentials}{7}{subsubsection.3.4.3}%
-\contentsline {section}{\numberline {4}Recommendations}{7}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Mitigating Linkability with Rolling Codes}{7}{subsection.4.1}%
-\contentsline {subsubsection}{\numberline {4.1.1}Client-Side Challenges}{9}{subsubsection.4.1.1}%
-\contentsline {section}{\numberline {5}Conclusion}{9}{section.5}%
+\contentsline {subsection}{\numberline {3.4}Main Identified Privacy Threats}{8}{subsection.3.4}%
+\contentsline {subsubsection}{\numberline {3.4.1}Advertisement Keys in Macless Haystack}{8}{subsubsection.3.4.1}%
+\contentsline {subsubsection}{\numberline {3.4.2}Unit Test for Rolling Codes}{8}{subsubsection.3.4.2}%
+\contentsline {subsubsection}{\numberline {3.4.3}Plain Text Credentials}{8}{subsubsection.3.4.3}%
+\contentsline {section}{\numberline {4}Recommendations}{8}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Mitigating Linkability with Rolling Codes}{8}{subsection.4.1}%
+\contentsline {subsubsection}{\numberline {4.1.1}Client-Side Challenges}{10}{subsubsection.4.1.1}%
+\contentsline {section}{\numberline {5}Conclusion}{10}{section.5}%

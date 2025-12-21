@@ -1,46 +1,48 @@
-This is BibTeX, Version 0.99d (TeX Live 2026/dev/Arch Linux)
+This is BibTeX, Version 0.99d
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: macless-haystack.aux
+Reallocating 'name_of_file' (item size: 1) to 6 items.
 The style file: plain.bst
+Reallocating 'name_of_file' (item size: 1) to 11 items.
 Database file #1: references.bib
-You've used 1 entry,
+You've used 3 entries,
             2118 wiz_defined-function locations,
-            504 strings with 4281 characters,
-and the built_in function-call counts, 326 in all, are:
-= -- 28
-> -- 23
+            512 strings with 4574 characters,
+and the built_in function-call counts, 730 in all, are:
+= -- 64
+> -- 37
 < -- 0
-+ -- 9
-- -- 8
-* -- 24
-:= -- 67
-add.period$ -- 3
-call.type$ -- 1
-change.case$ -- 7
++ -- 15
+- -- 12
+* -- 34
+:= -- 133
+add.period$ -- 9
+call.type$ -- 3
+change.case$ -- 15
 chr.to.int$ -- 0
-cite$ -- 1
-duplicate$ -- 10
-empty$ -- 18
-format.name$ -- 8
-if$ -- 60
+cite$ -- 3
+duplicate$ -- 24
+empty$ -- 62
+format.name$ -- 12
+if$ -- 148
 int.to.chr$ -- 0
-int.to.str$ -- 1
+int.to.str$ -- 3
 missing$ -- 1
-newline$ -- 8
-num.names$ -- 2
-pop$ -- 5
+newline$ -- 18
+num.names$ -- 6
+pop$ -- 27
 preamble$ -- 1
-purify$ -- 6
+purify$ -- 12
 quote$ -- 0
-skip$ -- 8
+skip$ -- 20
 stack$ -- 0
-substring$ -- 5
-swap$ -- 1
+substring$ -- 15
+swap$ -- 3
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 4
+type$ -- 12
 warning$ -- 0
-while$ -- 2
-width$ -- 2
-write$ -- 13
+while$ -- 6
+width$ -- 4
+write$ -- 31
