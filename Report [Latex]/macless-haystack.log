@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.12.21)  21 DEC 2025 12:06
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.12.21)  21 DEC 2025 12:32
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -732,27 +732,39 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has b
                    \relax 
 l.72 \newpage
               [1]
+
+LaTeX Warning: No positions in optional float specifier.
+               Default added (so using `tbp') on input line 105.
+
 <figures/applicationoverview.png, id=131, 237.0456pt x 149.358pt>
 File: figures/applicationoverview.png Graphic file (type png)
 <use figures/applicationoverview.png>
 Package pdftex.def Info: figures/applicationoverview.png  used on input line 107.
 (pdftex.def)             Requested size: 382.40659pt x 240.9604pt.
- [2]
-Package hyperref Info: bookmark level for unknown todo defaults to 0 on input line 125.
- [3 <./figures/applicationoverview.png>]
+[2] [3 <./figures/applicationoverview.png>]
 <../dataflow_diagram.png, id=148, 10655.81pt x 8198.63pt>
 File: ../dataflow_diagram.png Graphic file (type png)
 <use ../dataflow_diagram.png>
-Package pdftex.def Info: ../dataflow_diagram.png  used on input line 163.
+Package pdftex.def Info: ../dataflow_diagram.png  used on input line 161.
 (pdftex.def)             Requested size: 10655.78416pt x 8198.61012pt.
 
-Overfull \hbox (9.69467pt too wide) in paragraph at lines 173--173
+Overfull \hbox (9.69467pt too wide) in paragraph at lines 171--171
 []|\OT1/cmr/bx/n/10 Severity|  
  []
 
 
-Overfull \hbox (9.69467pt too wide) in paragraph at lines 177--177
+Overfull \hbox (9.69467pt too wide) in paragraph at lines 175--175
 []|\OT1/cmr/bx/n/10 Severity|  
+ []
+
+
+Overfull \hbox (5.58664pt too wide) in paragraph at lines 180--180
+\OT1/cmr/m/n/10 Compliance|  
+ []
+
+
+Overfull \hbox (1.50742pt too wide) in paragraph at lines 180--180
+[]|\OT1/cmr/m/n/10 Critical|  
  []
 
 
@@ -761,28 +773,38 @@ Overfull \hbox (5.58664pt too wide) in paragraph at lines 182--182
  []
 
 
-Overfull \hbox (1.50742pt too wide) in paragraph at lines 182--182
-[]|\OT1/cmr/m/n/10 Critical|  
- []
-
-
-Overfull \hbox (5.58664pt too wide) in paragraph at lines 184--184
-\OT1/cmr/m/n/10 Compliance|  
- []
-
-
-Overfull \hbox (1.5589pt too wide) in paragraph at lines 186--186
+Overfull \hbox (1.5589pt too wide) in paragraph at lines 184--184
 []|\OT1/cmr/m/n/10 Linkability 
  []
 
 
-Overfull \hbox (5.58664pt too wide) in paragraph at lines 188--188
+Overfull \hbox (5.58664pt too wide) in paragraph at lines 186--186
 \OT1/cmr/m/n/10 Compliance|  
  []
 
 
-Overfull \hbox (10.44771pt too wide) in paragraph at lines 190--190
+Overfull \hbox (10.44771pt too wide) in paragraph at lines 188--188
 []|\OT1/cmr/m/n/10 Unawareness|  
+ []
+
+
+Overfull \hbox (4.53522pt too wide) in paragraph at lines 188--188
+[]|\OT1/cmr/m/n/10 Medium|  
+ []
+
+
+Overfull \hbox (6.75745pt too wide) in paragraph at lines 190--190
+[]|\OT1/cmr/m/n/10 NC.1.2.a|  
+ []
+
+
+Overfull \hbox (2.69775pt too wide) in paragraph at lines 190--190
+[]|\OT1/cmr/m/n/10 Regulatory 
+ []
+
+
+Overfull \hbox (5.58664pt too wide) in paragraph at lines 190--190
+\OT1/cmr/m/n/10 Compliance|  
  []
 
 
@@ -791,18 +813,8 @@ Overfull \hbox (4.53522pt too wide) in paragraph at lines 190--190
  []
 
 
-Overfull \hbox (6.75745pt too wide) in paragraph at lines 192--192
-[]|\OT1/cmr/m/n/10 NC.1.2.a|  
- []
-
-
-Overfull \hbox (2.69775pt too wide) in paragraph at lines 192--192
-[]|\OT1/cmr/m/n/10 Regulatory 
- []
-
-
-Overfull \hbox (5.58664pt too wide) in paragraph at lines 192--192
-\OT1/cmr/m/n/10 Compliance|  
+Overfull \hbox (11.00331pt too wide) in paragraph at lines 192--192
+[]|\OT1/cmr/m/n/10 Detectability|  
  []
 
 
@@ -811,8 +823,13 @@ Overfull \hbox (4.53522pt too wide) in paragraph at lines 192--192
  []
 
 
-Overfull \hbox (11.00331pt too wide) in paragraph at lines 194--194
-[]|\OT1/cmr/m/n/10 Detectability|  
+Overfull \hbox (6.89633pt too wide) in paragraph at lines 194--194
+[]|\OT1/cmr/m/n/10 NR.1.1.a|  
+ []
+
+
+Overfull \hbox (7.94777pt too wide) in paragraph at lines 194--194
+\OT1/cmr/m/n/10 Repudiation|  
  []
 
 
@@ -821,13 +838,18 @@ Overfull \hbox (4.53522pt too wide) in paragraph at lines 194--194
  []
 
 
-Overfull \hbox (6.89633pt too wide) in paragraph at lines 196--196
-[]|\OT1/cmr/m/n/10 NR.1.1.a|  
+Overfull \hbox (7.313pt too wide) in paragraph at lines 196--196
+[]|\OT1/cmr/m/n/10 NC.1.2.b|  
  []
 
 
-Overfull \hbox (7.94777pt too wide) in paragraph at lines 196--196
-\OT1/cmr/m/n/10 Repudiation|  
+Overfull \hbox (2.69775pt too wide) in paragraph at lines 196--196
+[]|\OT1/cmr/m/n/10 Regulatory 
+ []
+
+
+Overfull \hbox (5.58664pt too wide) in paragraph at lines 196--196
+\OT1/cmr/m/n/10 Compliance|  
  []
 
 
@@ -836,18 +858,8 @@ Overfull \hbox (4.53522pt too wide) in paragraph at lines 196--196
  []
 
 
-Overfull \hbox (7.313pt too wide) in paragraph at lines 198--198
-[]|\OT1/cmr/m/n/10 NC.1.2.b|  
- []
-
-
-Overfull \hbox (2.69775pt too wide) in paragraph at lines 198--198
-[]|\OT1/cmr/m/n/10 Regulatory 
- []
-
-
-Overfull \hbox (5.58664pt too wide) in paragraph at lines 198--198
-\OT1/cmr/m/n/10 Compliance|  
+Overfull \hbox (1.5589pt too wide) in paragraph at lines 198--198
+[]|\OT1/cmr/m/n/10 Linkability|  
  []
 
 
@@ -856,8 +868,8 @@ Overfull \hbox (4.53522pt too wide) in paragraph at lines 198--198
  []
 
 
-Overfull \hbox (1.5589pt too wide) in paragraph at lines 200--200
-[]|\OT1/cmr/m/n/10 Linkability|  
+Overfull \hbox (5.58664pt too wide) in paragraph at lines 200--200
+\OT1/cmr/m/n/10 Compliance|  
  []
 
 
@@ -866,8 +878,8 @@ Overfull \hbox (4.53522pt too wide) in paragraph at lines 200--200
  []
 
 
-Overfull \hbox (5.58664pt too wide) in paragraph at lines 202--202
-\OT1/cmr/m/n/10 Compliance|  
+Overfull \hbox (6.17001pt too wide) in paragraph at lines 202--202
+[]|\OT1/cmr/m/n/10 Information 
  []
 
 
@@ -875,24 +887,16 @@ Overfull \hbox (4.53522pt too wide) in paragraph at lines 202--202
 []|\OT1/cmr/m/n/10 Medium|  
  []
 
-
-Overfull \hbox (6.17001pt too wide) in paragraph at lines 204--204
-[]|\OT1/cmr/m/n/10 Information 
- []
-
-
-Overfull \hbox (4.53522pt too wide) in paragraph at lines 204--204
-[]|\OT1/cmr/m/n/10 Medium|  
- []
-
 [4]
-c:/Users/annem/Documents/MASTER/PRIVACY&BIGDATA/privacy-and-big-data-report/Report [Latex]/macless-haystack.tex:206: ignored error: Infinite glue shrinkage found in box being split [5 <../dataflow_diagram.png>]
-c:/Users/annem/Documents/MASTER/PRIVACY&BIGDATA/privacy-and-big-data-report/Report [Latex]/macless-haystack.tex:206: ignored error: Infinite glue shrinkage found in box being split [6] [7] [8] (C:\Users\annem\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstlang1.sty
+c:/Users/annem/Documents/MASTER/PRIVACY&BIGDATA/privacy-and-big-data-report/Report [Latex]/macless-haystack.tex:204: ignored error: Infinite glue shrinkage found in box being split [5 <../dataflow_diagram.png>]
+c:/Users/annem/Documents/MASTER/PRIVACY&BIGDATA/privacy-and-big-data-report/Report [Latex]/macless-haystack.tex:204: ignored error: Infinite glue shrinkage found in box being split [6] [7]
+Package hyperref Info: bookmark level for unknown todo defaults to 0 on input line 217.
+ [8] (C:\Users\annem\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstlang1.sty
 File: lstlang1.sty 2025/11/14 1.11b listings language file
 ) (C:\Users\annem\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstmisc.sty
 File: lstmisc.sty 2025/11/14 1.11b (Carsten Heinz)
 )
-Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 242.
+Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 240.
  [9] (macless-haystack.bbl
 Underfull \hbox (badness 1789) in paragraph at lines 4--9
 []\OT1/cmr/m/n/10 dchristl.  Macless-haystack.  GitHub repos-i-tory. Avail-able at: [][]$\OT1/cmtt/m/n/10 https : / / github . com / dchristl /
@@ -907,17 +911,17 @@ Package rerunfilecheck Info: File `macless-haystack.out' has not changed.
 (rerunfilecheck)             Checksum: 9FE6B05497AEA3CC919FAB68F972D404;4271.
  ) 
 Here is how much of TeX's memory you used:
- 26489 strings out of 467871
- 513363 string characters out of 5418375
- 1672464 words of memory out of 5000000
- 54810 multiletter control sequences out of 15000+600000
+ 26485 strings out of 467871
+ 513302 string characters out of 5418375
+ 1672419 words of memory out of 5000000
+ 54807 multiletter control sequences out of 15000+600000
  633757 words of font info for 62 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  99i,10n,108p,1598b,1411s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\annem\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1000.pk><C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmitt10.pfb><C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr5.pfb><C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb><C:/Users/annem/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt8.pfb>
-Output written on macless-haystack.pdf (11 pages, 1835028 bytes).
+Output written on macless-haystack.pdf (11 pages, 1834692 bytes).
 PDF statistics:
- 372 PDF objects out of 1000 (max. 8388607)
- 117 named destinations out of 1000 (max. 500000)
+ 371 PDF objects out of 1000 (max. 8388607)
+ 116 named destinations out of 1000 (max. 500000)
  196 words of extra memory for PDF output out of 10000 (max. 10000000)
 

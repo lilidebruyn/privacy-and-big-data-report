@@ -88,7 +88,7 @@ This report is structured in three main parts. First, we provide a detailed desc
 Macless-Haystack builds upon the OpenHaystack \cite{openhaystack} project, which reverse engineered the Apple 'Find My' protocol that enables tracking of Bluetooth devices without the need of an internet connection.
 \bigskip
 
-At a high level, the Find My trackers broadcast identifiers, which can be detected by nearby Apple devices. These apple devices then anonymously upload the location of the detected signal to iCloud. The owner can later retrieve the location of their device by requesting reports containing the trackers identifier.
+At a high level, the Find My trackers broadcast identifiers, which can be detected by nearby Apple devices. These Apple devices then anonymously upload the location of the detected signal to iCloud. The owner can later retrieve the location of their device by requesting reports containing the trackers identifier.
 \bigskip
 
 Figure~\ref{fig:macless-haystack} below visually represents the four main stages of the application:
@@ -102,7 +102,7 @@ Figure~\ref{fig:macless-haystack} below visually represents the four main stages
 
 Macless-Haystack gets rid of the need for any Apple hardware. All you need is an Apple ID with two-factor authentication via SMS and either a linux device or a supported bluetooth enabled microcontroller.
 
-\begin{figure}[H]
+\begin{figure}[]
     \centering
     \includegraphics[width=0.8\textwidth]{figures/applicationoverview.png}
     \caption{High-level overview of the Macless-Haystack workflow}
@@ -122,8 +122,6 @@ The Anisette server operator runs the separate Anisette-compatible service that 
 
 Apple is an indirect but essential stakeholder, as its Find My and iCloud infrastructure receives the encrypted location reports from nearby Apple devices and serves them to the Macless-Haystack endpoint authenticated with an Apple ID.
 
-\todo[inline]{Add stakeholders diagram}
-
 \subsection{Types of Data Collected and Purposes}
 
 \subsubsection{Data Collection in the Tracker}
@@ -139,16 +137,16 @@ Crowd-sourced Apple devices collect only three pieces of information when they d
     \item and the Bluetooth signal strength at that time.
 \end{itemize}
 
-This data is normally deleted quickly, but users can delay deletion by placing their device in airplane mode. This data is placed on the apple servers, and used for people to retrieve the location of their tracker reference.
+This data is normally deleted quickly, but users can delay deletion by placing their device in airplane mode. The data these devices then have is placed on the Apple servers, and used for people to retrieve the location of their tracker reference.
 \bigskip
 
 Apple stores the advertisement key together with its corresponding location report on their servers. From this, Apple can infer how many trackers are in use and estimate the general region in which they are being used, based on the uploader's IP address. Apple also knows the Apple ID associated with each device that uploads these reports. This means, at least in theory, that Apple could link a user to their tracker because the user's own Apple device will likely often be the one uploading the tracker's location reports.
 \bigskip
 
-Fetching location reports requires authentication. As a result, Apple can see which Apple account is hosting a macless-haystack endpoint and which trackers are used through that endpoint. This could allow Apple to terminate the Apple ID associated with the endpoint. The requirement for Apple ID authentication is likely in place to prevent abuse such as users uploading spam, overwhelming Apple's servers, or attempting to download large volumes of location reports that aren't their own.
+Fetching location reports requires authentication. As a result, Apple can see which Apple account is hosting a Macless-Haystack endpoint and which trackers are used through that endpoint. This could allow Apple to terminate the Apple ID associated with the endpoint. The requirement for Apple ID authentication is likely in place to prevent abuse such as users uploading spam, overwhelming Apple's servers, or attempting to download large volumes of location reports that aren't their own.
 
 \subsubsection{Data Collected by the Macless-Haystack Application}
-The Macless-Haystack frontend stores very little data. The single-page browser interface keeps the private keys of imported trackers in secure local storage. It also stores the username and password used to authenticate with the macless-haystack endpoint; however, these credentials are stored in plain text.
+The Macless-Haystack frontend stores very little data. The single-page browser interface keeps the private keys of imported trackers in secure local storage. It also stores the username and password used to authenticate with the Macless-Haystack endpoint; however, these credentials are stored in plain text.
 
 \subsubsection{Data Collected by the Macless-Haystack API}
 The API stores only minimal data, but it logs a significant amount of sensitive information. This includes every request made by the application, which means that if the logs are reviewed, the advertisement keys of all Macless-Haystack trackers can be seen.
@@ -179,7 +177,7 @@ The following table presents a systematic analysis of privacy threats using the 
 \endhead
 \hline
 \endfoot
-NC.3 / II.1 & Non-Compliance & Apple ID and password can be stored in plain text in config.ini (optional but supported). Exposes credentials to anyone with filesystem access (to the macless-haystack server). Similar for auth.json & Interaction 8, 14, 13 & Critical & Remove plain text password storage; require interactive login only \\
+NC.3 / II.1 & Non-Compliance & Apple ID and password can be stored in plain text in config.ini (optional but supported). Exposes credentials to anyone with filesystem access (to the Macless-Haystack server). Similar for auth.json & Interaction 8, 14, 13 & Critical & Remove plain text password storage; require interactive login only \\
 \hline
 DD.4.2 / NC.2 & Data Disclosure / Non-Compliance & Storage of private and public keys in plain text. Keys should be stored using platform-specific secure storage (Apple Keychain, Android Keystore, GNOME Keyring, Windows Credential Manager). & Interaction 2, 3b & High & Implement secure key storage using platform APIs (e.g., flutter\_secure\_storage) \\
 \hline
@@ -219,7 +217,7 @@ A dedicated testing environment and accompanying test suite were created to eval
 \todo[inline]{add picture of unit test}
 
 \subsubsection{Plain Text Credentials}
-The user's Apple ID credentials are stored in plaintext on the Macless server inside the auth.json file. This means that anyone with file access to the server can read the user's credentials. This represents a serious security vulnerability that must be addressed immediately, especially when the server and client are managed by different individuals. Additionally, the frontend website is not protected by HTTPS, and communication between the frontend and the Macless Haystack server is transmitted without encryption. This creates a severe security risk if a user enters their credentials for the macless haystack server into the frontend, as the information would be sent over the network unencrypted. While the current implementation does not require users to enter their credentials, since they are provided during server setup, an uninformed user might still attempt to do so. In scenarios where the server is configured by a third party, entering credentials through the website may even be necessary for the system to function, further increasing the risk.
+The user's Apple ID credentials are stored in plaintext on the Macless-Haystack server inside the auth.json file. This means that anyone with file access to the server can read the user's credentials. This represents a serious security vulnerability that must be addressed immediately, especially when the server and client are managed by different individuals. Additionally, the frontend website is not protected by HTTPS, and communication between the frontend and the Macless-Haystack server is transmitted without encryption. This creates a severe security risk if a user enters their credentials for the Macless-Haystack server into the frontend, as the information would be sent over the network unencrypted. While the current implementation does not require users to enter their credentials, since they are provided during server setup, an uninformed user might still attempt to do so. In scenarios where the server is configured by a third party, entering credentials through the website may even be necessary for the system to function, further increasing the risk.
 
 \todo[inline]{Add unit test for plain text credentials}
 
