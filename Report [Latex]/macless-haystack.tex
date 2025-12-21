@@ -197,7 +197,7 @@ Crowd-sourced Apple devices collect only three pieces of information when they d
 According to a blog by a Digital Forensics researcher at cellebrite\cite{binaryhick2025searchparty}, this data is normally deleted quickly, but users can delay deletion by placing their device in airplane mode. This data is placed on the Apple servers, and used for people to retrieve the location of their tracker reference.
 \bigskip
 
-Apple stores the advertisement key together with its corresponding location report on their servers. From this, Apple can infer how many trackers are in use and estimate the general region in which they are being used, based on the uploader's IP address. Apple also knows the Apple ID associated with each device that uploads these reports. This means, at least in theory, that Apple could link a user to their tracker because the user's own Apple device will likely often be the one uploading the tracker's location reports.
+Apple stores the advertisement key together with its corresponding location report on their servers. From this, Apple can infer how many trackers are in use and estimate the general region in which they are being used, based on the uploader's IP address.
 \bigskip
 
 Fetching location reports requires authentication. As a result, Apple can see which Apple account is hosting a Macless-Haystack endpoint and which trackers are used through that endpoint. This could allow Apple to terminate the Apple ID associated with the endpoint. The requirement for Apple ID authentication is likely in place to prevent abuse such as users uploading spam, overwhelming Apple's servers, or attempting to download large volumes of location reports that aren't their own.
