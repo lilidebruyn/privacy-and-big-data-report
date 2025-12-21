@@ -161,7 +161,7 @@ The API stores only minimal data, but it logs a significant amount of sensitive 
         \hline
         \textbf{Data Item} & \textbf{Source} & \textbf{Storage Location} & \textbf{Retention Period} & \textbf{Potential Privacy Impact} \\ \hline
         Apple ID / Credentials & endpoint operator & JSON in API Backend & Indefinite & Full account compromise; access to other Apple services. \\ \hline
-        public & private Key(s) & End User & Browser Local Storage \& JSON in filesystem \& tracker firmware / flash storage & Indefinite & Unauthorized access to (historical) location data. \\ \hline
+        Public \& Private Key(s) & End User & Browser Local Storage \& JSON in filesystem \& tracker firmware / flash storage & Indefinite & Unauthorized access to (historical) location data. \\ \hline
         Advertisement Keys & Tracker / Finder Device & Apple Servers, API Logs & Apple: $<24$h; Logs: Persistent & Linkability; device/owner movement profiling by nearby observers. \\ \hline
         Location Reports & Finder Device & Apple Servers & Short-term ($\sim$24h) & Exposure of real-time/historical physical locations and routines. \\ \hline
     \end{tabularx}
@@ -220,8 +220,56 @@ I.1.2 & Information Disclosure & Apple servers receive query metadata (timestamp
 \end{longtable}
 
 \subsection{GDPR Compliance Considerations}
-Macless-Haystack processes location data, which constitutes personal data under GDPR when relating to identifiable EU individuals. For personal use, GDPR obligations are minimal under the household exemption (Article 2(2)(c)). However, organizational deployments require full GDPR compliance, including appropriate security measures (Article 32), data subject rights support (Articles 15-22), and privacy by design (Article 25). The current implementation fails to meet several GDPR requirements: plaintext credential storage and optional HTTP violate security obligations (Article 32), while the lack of data export/deletion mechanisms prevents users from exercising their rights (Articles 15-22). 
+To assess GDPR compliance, we analyze the system based on the data controllers involved, the personal data they process, and the specific regulatory risks they face.
 
+\subsubsection{Data Controllers, Personal Data, and Risks}
+
+\paragraph{The End User}
+The individual user acts as a data controller because they generate the private keys and define the purpose of the tracking (i.e., deciding which objects or individuals to track).
+
+\textbf{Personal Data Processed:} Private keys, definitions of tracked objects.
+
+\textbf{GDPR Risks:}
+
+\textbf{Household Exemption:} Generally, for purely personal or household activities, the GDPR may not apply under the \textit{household exemption} (Article 2(2)(c)). However, if the user tracks individuals outside of a household context, they become fully liable.
+
+\textbf{Integrity and Confidentiality (Article 5 and Article 32):} The generation of private keys is currently insecure. Before flashing, keys are stored in plaintext JSON and must be imported into the application, preventing the use of secure platform storage (e.g., Keychain, Gnome Keyring).
+
+\textbf{Lawfulness of Processing (Article 6):} The system circumvents Apple's built-in anti-stalking protections. This allows users to track individuals or objects without consent more easily than within the official ecosystem, raising significant ethical and legal concerns regarding non-consensual surveillance.
+
+\paragraph{The Macless-Haystack Endpoint Operator}
+The operator of the Macless-Haystack instance acts as the primary data controller for the deployment. They hold the most personal data.
+
+\textbf{Personal Data Processed:}
+
+\emph{Account Credentials:} Apple ID and Password, and derived tokens (DSID, SearchPartyToken, etc.).
+
+\emph{Target Search Data:} Search Keys (IDs) for specific devices.
+
+\emph{Location Data:} Encrypted location reports, decoded metadata, and raw payloads.
+
+\emph{Logged Data:} Debug logs potentially persisting sensitive information.
+
+\textbf{GDPR Risks \& Violations:}
+
+\textbf{Integrity and Confidentiality:} There are critical failures regarding security. Apple ID credentials can be stored in plaintext (e.g., in \texttt{auth.json}), and the frontend supports unencrypted HTTP communication. This exposes potentially personal data to unauthorized access. (it becomes personal data if the middleman is able to link the data to a specific person, eg has the private key or is able to physically track the device using its static key advertisements)
+
+\textbf{Transparency and Purpose Limitation:} A major deficiency is the lack of transparency. The end user (if different from the operator) is often not informed about the processing of their data, and there is no documented purpose specification. If static keys are used, the end user should also be informed that apple might process personal data, depending on if apple can link the static keys to a specific person.
+
+\paragraph{Apple}
+Apple processes the encrypted location reports and public advertisement keys uploaded by finder devices.
+
+\textbf{Personal Data Processed:} Encrypted location reports, advertisement keys, uploader IP addresses/Apple IDs.
+
+\textbf{GDPR Risks:}
+
+\textbf{Linkability:} In a self-hosted setup where the tracker owner is the endpoint operator, Apple could link the tracker to the owner's Apple ID, making the data personal.
+
+\textbf{Mitigation:} If rolling keys are used, Apple's ability to link reports to a single device is significantly reduced, arguing for a lack of personal data processing in that specific context.
+
+\subsubsection{Disclaimer on Research Usage}
+It is important to note that this application is intended as a proof-of-concept research project. The project repository includes a disclaimer stating: "I take NO responsibility and/or liability for how you choose to use any of the source code available here. By using any of the files available in this repository, you understand that you are AGREEING TO USE AT YOUR OWN RISK. Once again, ALL files available here are for EDUCATION and/or RESEARCH purposes ONLY." 
+Consequently, operators hosting an endpoint should be aware of these risks and limit usage to personal research or household activities, avoiding deployment as a general-purpose service.
 \subsection{Main Identified Privacy Threats}
 
 \subsubsection{Advertisement Keys in Macless Haystack}
