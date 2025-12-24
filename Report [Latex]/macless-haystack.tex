@@ -232,7 +232,7 @@ The system's privacy properties depend on several trust assumptions. Users must 
 
 \subsection{LINDDUN Privacy Threat Analysis}
 The following table (Table~\ref{tab:lindunn}) presents a systematic analysis of privacy threats using the LINDDUN framework, which categorizes threats across privacy dimensions: Linkability, Identifiability, Non-repudiation, Detectability, Disclosure of information, Unawareness, and Non-compliance. Many compliance-related threats stem from the project's reverse-engineering of Apple's proprietary protocol and operation outside Apple's official ecosystem, which cannot be fully resolved without changing the project's purpose.
-
+The full dataflow diagram can be found in the appendices in Figure \ref{fig:dataflow_diagram}.
 \begin{longtable}{|>{\raggedright\arraybackslash}p{1.1cm}|>{\raggedright\arraybackslash}p{2cm}|>{\raggedright\arraybackslash}p{3.2cm}|>{\raggedright\arraybackslash}p{1.8cm}|>{\raggedright\arraybackslash}p{1.1cm}|>{\raggedright\arraybackslash}p{3.2cm}|}
 \caption{LINDDUN Privacy Threat Analysis}\label{tab:lindunn}\\
 \hline
@@ -449,7 +449,6 @@ class TestCredentialStorage(unittest.TestCase):
 To assess GDPR compliance, we analyze the system based on the data controllers involved, the personal data they process.
 \begin{table}[H]
     \centering
-    \caption{GDPR Stakeholder Analysis}
     \label{tab:gdpr_stakeholders}
     \begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}p{2.5cm}|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|}
         \hline
@@ -469,6 +468,32 @@ To assess GDPR compliance, we analyze the system based on the data controllers i
 
 % Part 3: Recommendations (no specific word limit mentioned, but part of 4000 word total)
 \section{Recommendations}
+\subsection{HTTPS Enforcement}
+The server should enforce HTTPS and not allow HTTP fallback when TLS certificates are missing. Currently, the server falls back to unencrypted HTTP if certificate files are not found. The server startup should check for both the TLS certificate and private key files, and terminate with a clear error message if either is missing, rather than falling back to HTTP. This prevents accidental deployment of an unencrypted server and ensures administrators are aware of the security requirement. For development and testing, a helper script should be provided to generate self-signed certificates, but production deployments should use certificates from a trusted certificate authority.
+An small assertion can be added to the server to check if the certificate is there, and if not, the server should exit with an error message. This prevents the server from running without a certificate.
+
+\begin{lstlisting}[style=cstyle, language=Python, caption={HTTPS Enforcement Logic}, basicstyle=\ttfamily\tiny\color{codetext}]
+if os.path.isfile(mh_config.getCertFile()):
+    logger.info("Certificate file " + mh_config.getCertFile() +
+                " exists, so using SSL")
+    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    ssl_context.load_cert_chain(certfile=mh_config.getCertFile(
+    ), keyfile=mh_config.getKeyFile() if os.path.isfile(mh_config.getKeyFile()) else None)
+
+    httpd.socket = ssl_context.wrap_socket(httpd.socket, server_side=True)
+
+    logger.info("serving at " + address + " over HTTPS")
+else:
+    logger.info("Certificate file not found, please provide a valid certificate file")
+    logger.error("Exiting program")
+    sys.exit()
+\end{lstlisting}
+
+
+
+\subsection{Credential Encryption}
+All sensitive credentials, including authentication tokens stored in auth.json and passwords in config.ini, should be encrypted at rest using a symmetric encryption algorithm. Currently, these credentials are stored in plaintext files that can be read directly by anyone with file system access.An encryption module should be implemented that automatically encrypts credentials when they are written to files and decrypts them when they are read. The master encryption key should be stored securely with restricted file permissions, and encrypted credential files should also have restricted permissions to prevent unauthorized access. A migration script could be provided to convert existing plaintext files to encrypted format, allowing existing deployments to be upgraded without data loss.
+
 \subsection{Mitigating Linkability with Rolling Codes}
 Static advertisement keys allow anyone to track a device by listening for its BLE signal. To fix this, we recommend using rolling codes, which means the key changes periodically (for example, every 24 hours). This prevents strangers from linking different packets to the same device, but the owner can still find it because they have the secret key to calculate the list of all past and future advertisement keys.\\
 To prevent this we can use the same method as Apple's official airtags \cite{DBLP:journals/corr/abs-2103-02282}. This uses Elliptic Curve Cryptography on the NIST P-224 curve. It starts with a master key pair and a 32-bit symmetric key. New keys are created using the ANSI X.963 key derivation function (KDF) with these formulas \cite{DBLP:journals/corr/abs-2103-02282}:
@@ -633,31 +658,6 @@ As a result, when a user returns to the application after a long period of inact
 
 This uncertainty forces us to search backward from the estimated current key to the last known key. However, performing this search naively risks triggering Apple server rate limits or bans.
 The unreliability of the tracker can be mitigated by integrating an RTC module into the tracker. An RTC would provide accurate timekeeping, allowing the application to reliably calculate key updates even after extended powered off periods\footnote{RTC modules typically include a built-in backup battery to maintain timekeeping when the host device is unpowered. Battery life can range from several months to over ten years, depending on usage.}
-\subsection{HTTPS Enforcement}
-The server should enforce HTTPS and not allow HTTP fallback when TLS certificates are missing. Currently, the server falls back to unencrypted HTTP if certificate files are not found. The server startup should check for both the TLS certificate and private key files, and terminate with a clear error message if either is missing, rather than falling back to HTTP. This prevents accidental deployment of an unencrypted server and ensures administrators are aware of the security requirement. For development and testing, a helper script should be provided to generate self-signed certificates, but production deployments should use certificates from a trusted certificate authority.
-An small assertion can be added to the server to check if the certificate is there, and if not, the server should exit with an error message. This prevents the server from running without a certificate.
-
-\begin{lstlisting}[style=cstyle, language=Python, caption={HTTPS Enforcement Logic}, basicstyle=\ttfamily\tiny\color{codetext}]
-if os.path.isfile(mh_config.getCertFile()):
-    logger.info("Certificate file " + mh_config.getCertFile() +
-                " exists, so using SSL")
-    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    ssl_context.load_cert_chain(certfile=mh_config.getCertFile(
-    ), keyfile=mh_config.getKeyFile() if os.path.isfile(mh_config.getKeyFile()) else None)
-
-    httpd.socket = ssl_context.wrap_socket(httpd.socket, server_side=True)
-
-    logger.info("serving at " + address + " over HTTPS")
-else:
-    logger.info("Certificate file not found, please provide a valid certificate file")
-    logger.error("Exiting program")
-    sys.exit()
-\end{lstlisting}
-
-
-
-\subsection{Credential Encryption}
-All sensitive credentials, including authentication tokens stored in auth.json and passwords in config.ini, should be encrypted at rest using a symmetric encryption algorithm. Currently, these credentials are stored in plaintext files that can be read directly by anyone with file system access.An encryption module should be implemented that automatically encrypts credentials when they are written to files and decrypts them when they are read. The master encryption key should be stored securely with restricted file permissions, and encrypted credential files should also have restricted permissions to prevent unauthorized access. A migration script could be provided to convert existing plaintext files to encrypted format, allowing existing deployments to be upgraded without data loss.
 
 
 \subsection{Handling the GDPR and EULA Violations}
@@ -676,5 +676,13 @@ In conclusion, Macless-Haystack should be used with caution and limited to conte
 \bibliographystyle{plain}
 \bibliography{references}
 
+\appendix
+\section{Appendices}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/dataflow_diagram.png}
+    \caption{Dataflow Diagram of the Macless-Haystack System}
+    \label{fig:dataflow_diagram}
+\end{figure}
 
 \end{document}
