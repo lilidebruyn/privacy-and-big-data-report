@@ -164,22 +164,27 @@ Figure~\ref{fig:macless-haystack} above visually represents the four main stages
 \subsection{The Stakeholders}
 The primary stakeholders are the end users who want to research the 'Find My' network and track their own Bluetooth devices.
 They are responsible for generating the keypairs used in the system and storing them safely, as well as programming the advertisement key onto the tracker.
+
 \bigskip
 The Macless-Haystack API operator is the party running the backend that accesses the 'Find My' network and fetches encrypted location reports.In practices this is the same party as the end user, as there are to our knowledge no public Macless-Haystack API endpoints.
+
 \bigskip
 The Anisette server operator runs the separate service that Macless-Haystack API connects to in order to emulate a real Apple device during login and communication with Apple. This role can again coincide with the endpoint operator in a self-hosted setup, but when a public or third-party Anisette instance is used, that operator becomes a distinct stakeholder who may see sensitive authentication-related traffic and must therefore be explicitly trusted.
+
 \bigskip
 Apple is an indirect but essential stakeholder, as its 'Find My' and iCloud infrastructure receives the encrypted location reports from nearby Apple devices and serves them to the Macless-Haystack endpoint.
-
 To further visualise the stakeholders and their relationships, see figure~\ref{fig:stakeholders}.
+
 \bigskip
 In essence, the only sensitive data in the system is the private key of the tracker. The encrypted location reports and the advertisement key are public information as anyone that is physically close to the tracker can read the advertisement key and request the encrypted location reports.
 Meaning that all data that flows through this part of the system is public information, and should contain no (accessible) personal data.A important detail that is not in the diagram is that the finder device itself generates and encrypts the location reports, this internal data to the finder device is very personal and defintely not public information. 
+
 \bigskip
 The data in the operator endpoint however could contain some personal data, depending on the hosting setup.
 Conventionally, the endpoint operator only has access to metadata and the encrypted location reports, which are public information.
 But if the endpoint operator requests the apple id and password of the end user, and uses this to login to apple and fetch the encrypted location reports.
 Additional trust must be had in it as these credentials could be used for non find my purposes.
+
 \bigskip
 
 
@@ -404,43 +409,36 @@ E (1044) macless_haystack: Found 1 keys
 I (1044) macless_haystack: OpenHaystack initialized with 1 keys
 I (1054) macless_haystack: Loading key with index 0 at address 1
 I (1054) macless_haystack: using key with start 93 44
-I (1064) macless_haystack: using device address: d3 44 54 16 ec 07
 I (1064) macless_haystack: Sending beacon
 I (1174) macless_haystack: Current cycle is 0. Reusing key. 
 I (1274) macless_haystack: Going to sleep
 I (1374) macless_haystack: Loading key with index 0 at address 1
 I (1374) macless_haystack: using key with start 93 44
-I (1374) macless_haystack: using device address: d3 44 54 16 ec 07
 I (1374) macless_haystack: Sending beacon
 I (1484) macless_haystack: Current cycle is 1. Reusing key. 
 I (1584) macless_haystack: Going to sleep
 I (1684) macless_haystack: Loading key with index 0 at address 1
 I (1684) macless_haystack: using key with start 93 44
-I (1684) macless_haystack: using device address: d3 44 54 16 ec 07
 I (1684) macless_haystack: Sending beacon
 I (1794) macless_haystack: Current cycle is 2. Reusing key. 
 I (1894) macless_haystack: Going to sleep
 I (1994) macless_haystack: Loading key with index 0 at address 1
 I (1994) macless_haystack: using key with start 93 44
-I (1994) macless_haystack: using device address: d3 44 54 16 ec 07
 I (1994) macless_haystack: Sending beacon
 I (2104) macless_haystack: Current cycle is 3. Reusing key. 
 I (2204) macless_haystack: Going to sleep
 I (2304) macless_haystack: Loading key with index 0 at address 1
 I (2304) macless_haystack: using key with start 93 44
-I (2304) macless_haystack: using device address: d3 44 54 16 ec 07
 I (2304) macless_haystack: Sending beacon
 I (2414) macless_haystack: Current cycle is 4. Reusing key. 
 I (2514) macless_haystack: Going to sleep
 I (2614) macless_haystack: Loading key with index 0 at address 1
 I (2614) macless_haystack: using key with start 93 44
-I (2614) macless_haystack: using device address: d3 44 54 16 ec 07
 I (2614) macless_haystack: Sending beacon
 I (2724) macless_haystack: Max cycles 5 are reached. Changing key 
 I (2824) macless_haystack: Going to sleep
 I (2924) macless_haystack: Loading key with index 0 at address 1
 I (2924) macless_haystack: using key with start 93 44
-I (2924) macless_haystack: using device address: d3 44 54 16 ec 07
 I (2924) macless_haystack: Sending beacon
 I (3034) macless_haystack: Current cycle is 0. Reusing key. 
 I (3134) macless_haystack: Going to sleep
@@ -500,6 +498,11 @@ else:
     logger.error("Exiting program")
     sys.exit()
 \end{lstlisting}
+
+\subsection{Handling the GDPR and EULA Violations}
+Our recommended solution to the GDPR and EULA violations is to obtain explicit consent from the user regarding the use of the application and the collection of their data. Additionally, it is importa to inform users that the application is used at their own risk, and that they are advised to host the Macless-Haystack server themselves while being fully aware of the privacy implications associated with this application.
+
+A similar disclaimer is included in the GitHub README.This information should be incorporated directly into the application itself, together with a clear consent form.
 
 \subsection{Mitigating Linkability with Rolling Codes}
 Static advertisement keys allow anyone to track a device by listening for its BLE signal. To fix this, we recommend using rolling codes, which means the key changes periodically (for example, every 24 hours).\\
@@ -576,15 +579,6 @@ void roll_key_and_update_state() {
 
     // Export result
     mbedtls_mpi_write_binary(&d_i, rolling_priv_bytes, 28);
-    ESP_LOGI(LOG_TAG, "New Private Key:");
-    {
-        char key_str[28 * 2 + 1];
-        for (int i = 0; i < 28; i++) {
-            sprintf(&key_str[i * 2], "%02x", rolling_priv_bytes[i]);
-        }
-        key_str[28 * 2] = '\0';
-        ESP_LOGI(LOG_TAG, "%s", key_str);
-    }
 
     // Cleanup MPI
     mbedtls_mpi_free(&d_0); mbedtls_mpi_free(&u); mbedtls_mpi_free(&v);
@@ -609,51 +603,37 @@ I (1074) macless_haystack: OpenHaystack Initializing in ROLLING KEY mode
 I (1084) macless_haystack: using private key with start 15 bb
 I (1084) macless_haystack: using symetric key with start 93 44
 I (1094) macless_haystack: Rolling keys...
-I (1094) macless_haystack: New Private Key:
-I (1104) macless_haystack: 721500be1f03bcaa67a9951592c2546324f3ebf5e4ef536892a94da7
-I (1104) macless_haystack: Private scalar (big-endian): 721500be1f03bcaa67a9951592c2546324f3ebf5e4ef536892a94da7
-I (1114) macless_haystack: Curve order N (big-endian): ffffffffffffffffffffffffffff16a2e0b8f03e13dd29455c5c2a3d
 I (1184) macless_haystack: Public key derivation successful
 I (1184) macless_haystack: Using Rolling Key
 I (1194) macless_haystack: using key with start ef dd
-I (1194) macless_haystack: using device address: ef dd a4 1e fe 08
 I (1204) macless_haystack: Sending beacon
 I (1304) macless_haystack: Current cycle is 0. Reusing key. 
 I (1404) macless_haystack: Going to sleep
 I (1504) macless_haystack: Using Rolling Key
 I (1504) macless_haystack: using key with start ef dd
-I (1504) macless_haystack: using device address: ef dd a4 1e fe 08
 I (1504) macless_haystack: Sending beacon
 I (1614) macless_haystack: Current cycle is 1. Reusing key. 
 I (1714) macless_haystack: Going to sleep
 I (1814) macless_haystack: Using Rolling Key
 I (1814) macless_haystack: using key with start ef dd
-I (1814) macless_haystack: using device address: ef dd a4 1e fe 08
 I (1814) macless_haystack: Sending beacon
 I (1924) macless_haystack: Current cycle is 2. Reusing key. 
 I (2024) macless_haystack: Going to sleep
 I (2124) macless_haystack: Using Rolling Key
 I (2124) macless_haystack: using key with start ef dd
-I (2124) macless_haystack: using device address: ef dd a4 1e fe 08
 I (2124) macless_haystack: Sending beacon
 I (2234) macless_haystack: Current cycle is 3. Reusing key. 
 I (2334) macless_haystack: Going to sleep
 I (2434) macless_haystack: Using Rolling Key
 I (2434) macless_haystack: using key with start ef dd
-I (2434) macless_haystack: using device address: ef dd a4 1e fe 08
 I (2434) macless_haystack: Sending beacon
 I (2544) macless_haystack: Current cycle is 4. Reusing key. 
 I (2644) macless_haystack: Going to sleep
 I (2744) macless_haystack: Using Rolling Key
 I (2744) macless_haystack: using key with start ef dd
-I (2744) macless_haystack: using device address: ef dd a4 1e fe 08
 I (2744) macless_haystack: Sending beacon
 I (2854) macless_haystack: Max cycles 5 are reached. Changing key 
 I (2854) macless_haystack: Rolling keys...
-I (2854) macless_haystack: New Private Key:
-I (2854) macless_haystack: 7e1df42345e15aea30c052b9b47e4a25860a04f2182730afa2b2360d
-I (2864) macless_haystack: Private scalar (big-endian): 7e1df42345e15aea30c052b9b47e4a25860a04f2182730afa2b2360d
-I (2874) macless_haystack: Curve order N (big-endian): ffffffffffffffffffffffffffff16a2e0b8f03e13dd29455c5c2a3d
 I (2944) macless_haystack: Public key derivation successful
 I (2944) macless_haystack: Rolled to new key.
 I (3044) macless_haystack: Going to sleep
@@ -671,11 +651,6 @@ OK
 \end{lstlisting}
 \end{minipage}
 \footnote{The ESP SDK's CI/CD tools are limitted and testing needs to be done on the tracker. This is the reason the test logs include so many log messages.}
-
-\subsection{Handling the GDPR and EULA Violations}
-Our recommended solution to the GDPR and EULA violations is to obtain explicit consent from the user regarding the use of the application and the collection of their data. Additionally, it is importa to inform users that the application is used at their own risk, and that they are advised to host the Macless-Haystack server themselves while being fully aware of the privacy implications associated with this application.
-
-A similar disclaimer is included in the GitHub README.This information should be incorporated directly into the application itself, together with a clear consent form.
 \section{Conclusion}
 This privacy impact assessment evaluated Macless-Haystack, an open-source project that enables users access to Apple's 'Find My' network without requiring Apple hardware and thus processes sensitive location-related data and authentication credentials. The assessment identified linkability through static advertisement keys as the primary risk, because persistent Bluetooth identifiers allow passive tracking despite there being strong encryption of local reports. Additional risks identified are plaintext credential storage and optional unencrypted communication.
 \bigskip
