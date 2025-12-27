@@ -76,13 +76,13 @@
 
 % Introduction/Executive Summary
 \section{Introduction}
-This report presents a Privacy Impact Assessment (PIA) for Macless-Haystack \cite{maclesshaystack}, an open-source (research) project that enables users to use Apple's 'Find My' network without requiring Apple hardware.As the technology for global tracking systems becomes increasingly more accessible by the introduction of global distributed networks such as the Apple 'Find My', Google 'Find My Device' and Amazon 'Sidewalk' networks.Understanding the privacy implications of such technologies is crucial for both developers and end users.
+This report presents a Privacy Impact Assessment (PIA) for Macless-Haystack \cite{maclesshaystack}, an open-source (research) project that enables users to use Apple's 'Find My' network without requiring Apple hardware.As the technology for global tracking systems becomes increasingly more accessible by the introduction of global distributed networks such as the Apple 'Find My', Google 'Find My Device' and Amazon 'Sidewalk' networks.Understanding the privacy implications of such technologies is important for both developers and users.
 \bigskip
 
-The assessment examines how Macless-Haystack collects, processes and stores data.It identifies potential privacy risks, proposes technical solutions to mitigate these concerns. We analyze the system from multiple perspectives: the tracker devices themselves, the Macless-Haystack application and API.
+The report examines how Macless-Haystack collects, processes and stores data.It identifies potential privacy risks and proposes technical solutions to mitigate these concerns. We analyze the system from multiple perspectives: the tracker devices themselves, the Macless-Haystack application and API.
 \bigskip
 
-This report is structured in three main parts. First, we provide a detailed description of the application's functionality, stakeholders, and data collection practices. Second, we conduct a privacy impact assessment that includes a threat model, identification of privacy issues, and analysis of specific threats. Finally, we present recommendations for addressing the identified privacy concerns, with particular focus on technical implementations that can be tested and verified.
+This report is structured in three main parts. First, we provide a detailed description of the application's functionality, stakeholders, and data collection practices. Second, we conduct a privacy impact assessment that includes a threat model, identification of privacy issues, and an analysis of specific threats. Finally, we present recommendations for addressing the identified privacy concerns, with particular focus on technical implementations that can be tested and verified.
 \begin{figure}[H]
     \centering
     \begin{minipage}[t]{0.48\textwidth}
@@ -106,9 +106,7 @@ This report is structured in three main parts. First, we provide a detailed desc
 Macless-Haystack builds upon the OpenHaystack \cite{openhaystack} project, which reverse engineered the Apple 'Find My' application that enables the tracking of low cost Bluetooth devices without the need of an internet connection.
 \bigskip
 
-At a high level, the 'Find My' trackers broadcast identifiers, which can be detected by nearby Apple devices. These Apple devices then anonymously upload an encrypted report which contains its current GPS location. The owner can later retrieve the location of their tracker by requesting reports containing the trackers identifier.
-\bigskip
-
+At a high level, the trackers broadcast an identifier which can be detected by nearby Apple devices. These Apple devices then anonymously upload an encrypted report which contains its current GPS location. The owner can later retrieve the location of their tracker by requesting these reports.
 Figure~\ref{fig:macless-haystack} above visually represents the four main stages of the application:
 
 \begin{enumerate}
@@ -274,72 +272,167 @@ I.1.2 & Information Disclosure & Apple servers receive query metadata revealing 
 \subsection{Main Identified Privacy Threats}
 \subsubsection{Plain Text Credentials}
 The current implementation stores authentication tokens and passwords in plaintext files that can be read directly without decryption\footnote{Remote shell access is a common objective for attackers, such as the critical flaw recently discovered in the React library. Consequently, the file system cannot be trusted simply because the enduser can't directly access it.}. The auth.json file contains authentication tokens (dsid and searchPartyToken) used to communicate with Apple's servers instead of passwords after initial login. These tokens are stored as plaintext JSON, meaning anyone with file system access can read them directly. Similarly, passwords in config.ini are stored in plaintext, allowing direct reading of sensitive credentials. The tokens are obtained after the initial Apple ID login and are used for subsequent API calls. In the code snippet below, you can see how we test for plain text credentials.
-\\    
-\begin{minipage}[t]{0.48\linewidth}
-    \begin{lstlisting}[style=cstyle, language=Python, caption={Test Credential Storage}, label={lst:credential_test}, basicstyle=\ttfamily\tiny\color{codetext}]
-class TestCredentialStorage(unittest.TestCase):
+As config.ini is not written to by the program, it cannot be unit tested in the traditional sense. To ensure privacy, we added a specific test to verify that the file does not contain any plaintext passwords.
+The key generation script's procedural style, standard unit testing is not possible. We tested it by mocking the environment and executing the script string directly, though a object oriented rewrite would be a more robust solution.\\    
+\begin{lstlisting}[style=cstyle, language=Python, caption={Test Credential Storage}, label={lst:credential_test}, basicstyle=\ttfamily\tiny\color{codetext}]
+class TestCredentialStorage:
     def test_config_does_not_store_plaintext_passwords(self):
-        import mh_encryption
-        import re
         config_path = mh_config.getConfigPath() + "/config.ini"
-        if not os.path.isfile(config_path):
-            self.skipTest("config.ini not found")
+            
         has_plaintext = False
         with open(config_path, 'r') as f:
             for line in f:
                 for field in ['appleid_pass', 'endpoint_pass']:
                     match = re.match(rf'{field}\s*=\s*(.*)$', line.strip())
                     if match:
-                        value = match.group(1).strip()
-                        if value and not mh_encryption.is_encrypted(value):
-                            has_plaintext = True
-                            break
-        self.assertFalse(has_plaintext, "config.ini contains plaintext passwords")
+                        has_plaintext = True
 
-    def test_auth_json_does_not_store_plaintext_tokens(self):
-        import mh_encryption
-        auth_path = mh_config.getConfigFile()
-        if not os.path.isfile(auth_path):
-            self.skipTest("auth.json not found")
-        with open(auth_path, 'r') as f:
-            content = f.read().strip()
-        is_encrypted = mh_encryption.is_encrypted(content)
-        if not is_encrypted:
-            try:
-                data = json.loads(content)
-                has_tokens = data.get('dsid') or data.get('searchPartyToken')
-                if has_tokens:
-                    self.fail("auth.json stores tokens in plaintext")
-            except json.JSONDecodeError:
-                self.fail("auth.json is neither encrypted nor valid JSON")
-    \end{lstlisting}
-    \end{minipage}
-    \hfill
-    \begin{minipage}[t]{0.48\linewidth}
-    \begin{lstlisting}[style=cstyle, language=Python, caption={Test Credential Storage}, label={lst:credential_test}, basicstyle=\ttfamily\tiny\color{codetext}]
-        TODOOO
-    \end{lstlisting}
-    \end{minipage}
+        assert not has_plaintext, "config.ini contains plaintext passwords"
+
+    @mock.patch("endpoint.mh_endpoint.pypush_gsa_icloud.icloud_login_mobileme")
+    @mock.patch("endpoint.mh_config.getConfigFile", return_value="test.json")
+    @mock.patch("endpoint.mh_endpoint.json.dump")
+    @mock.patch("endpoint.mh_endpoint.open", new_callable=mock.mock_open)
+    def test_auth_json_does_not_include_sensitive_fields(self, mock_file, mock_json_dump, mock_get_config, mock_icloud_login):
+        fake_mobileme = StrDict("MobileMe Result")
+        fake_mobileme.d = {
+            'dsid': 'FAKE_DSID',
+            'delegates': {
+                'com.apple.mobileme': {
+                    'service-data': {
+                        'tokens': {'searchPartyToken': 'FAKE_TOKEN'}
+                    }
+                }
+            }
+        }
+        
+        mock_icloud_login.return_value = fake_mobileme
+
+        mh_config.USER = "fakeuser"
+        mh_config.PASS = "fakepass"
+        
+        mh_endpoint.getAuth(regenerate=True)
+
+        
+        args, _ = mock_json_dump.call_args
+        data = args[0]
+        
+        assert 'searchPartyToken' not in data, "searchPartyToken should not be stored in auth.json"
+        assert 'dsid' not in data, "dsid should not be stored in auth.json"
+
+    @mock.patch('shutil.rmtree')
+    @mock.patch('os.path.exists', return_value=False)
+    @mock.patch('os.mkdir')
+    @mock.patch('builtins.open')
+    def test_private_key_not_stored_as_plain_text(self, mock_open, mock_mkdir, mock_exists, mock_rmtree):
+
+        # Setup file system mocks
+        file_mocks = {}
+        def open_side_effect(filename, mode='r', *args, **kwargs):
+            m = mock.MagicMock()
+            m.__enter__.return_value = m
+            file_mocks[filename] = m
+            return m
+            
+        mock_open.side_effect = open_side_effect
+
+        # Execute script
+        with mock.patch.object(sys, 'argv', ["generate_keys.py", "-n", "1", "--prefix", "TEST"]):
+            exec(generate_keys, {})
+
+        target_path = 'output/TEST_devices.json'
+        if target_path not in file_mocks:
+            pytest.fail(f"Devices file {target_path} was not opened. Captured: {list(file_mocks.keys())}")
+
+        target_file = file_mocks[target_path]
+        
+        full_content = ""
+        for call in target_file.write.mock_calls:
+            if call.args:
+                full_content += call.args[0]
+                
+        device_data = json.loads(full_content)        
+        
+        for device in device_data:
+            if device.get('privateKey'):
+                pytest.fail(f"Private key found in plain text")
+\end{lstlisting}
+
+\begin{lstlisting}[style=cstyle, caption={Test Output showing privacy failures}, label={lst:credential_test_output}, basicstyle=\ttfamily\tiny\color{codetext}, keywords={FAILED, AssertionError, Failed}, keywordstyle=\color{red}\bfseries, moredelim={[l][\color{red}]{E\ \ }}]
+========================= test session starts =========================
+platform linux -- Python 3.10.19, pytest-8.4.2, pluggy-1.6.0 -- /home/cyuzuzo/.pyenv/versions/3.10.19/bin/python3.10
+cachedir: .pytest_cache
+rootdir: /home/cyuzuzo/Projects/macless-haystack
+configfile: pytest.ini
+plugins: anyio-4.11.0
+collected 3 items                                                                                                                                                                                        
+
+test_security_pytest.py::TestCredentialStorage::test_config_does_not_store_plaintext_passwords FAILED
+test_security_pytest.py::TestCredentialStorage::test_auth_json_does_not_include_sensitive_fields FAILED
+test_security_pytest.py::TestCredentialStorage::test_private_key_not_stored_as_plain_text FAILED                   
+
+========================= FAILURES =========================
+_____ TestCredentialStorage.test_config_does_not_store_plaintext_passwords _____
+test_security_pytest.py:60: in test_config_does_not_store_plaintext_passwords
+    assert not has_plaintext, "config.ini contains plaintext passwords"
+E   AssertionError: config.ini contains plaintext passwords
+E   assert not True
+_____ TestCredentialStorage.test_auth_json_does_not_include_sensitive_fields _____
+test_security_pytest.py:98: in test_auth_json_does_not_include_sensitive_fields
+    assert 'searchPartyToken' not in data, "searchPartyToken should not be stored in auth.json"
+E   AssertionError: searchPartyToken should not be stored in auth.json
+E   assert 'searchPartyToken' not in {'dsid': 'FAKE_DSID', 'searchPartyToken': 'FAKE_TOKEN'}
+_____ TestCredentialStorage.test_private_key_not_stored_as_plain_text _____
+test_security_pytest.py:139: in test_private_key_not_stored_as_plain_text
+    pytest.fail(f"Private key found in plain text")
+E   Failed: Private key found in plain text
+\end{lstlisting}
  \subsubsection{HTTP Communication}
 The current Macless Haystack server implementation allows the endpoint to run over unencrypted HTTP when TLS certificates are not configured. The code checks for the presence of certificate files and falls back to HTTP if they are missing. This creates a security risk because all communication between client and server occurs in plaintext, making it vulnerable to network sniffing and man-in-the-middle attacks. An attacker on the same network can intercept and read all traffic, including Basic Authentication credentials between the endpoint and the client that are only Base64-encoded and easily decoded.
 \\
-\begin{minipage}[t]{0.48\linewidth}
+\begin{minipage}[t]{0.49\linewidth}
 \begin{lstlisting}[style=cstyle, language=Python, caption={Test HTTPS Configuration}, label={lst:https_test}, basicstyle=\ttfamily\tiny\color{codetext}]
-class TestHTTPSConfiguration(unittest.TestCase):
-def test_certificate_file_must_exist_for_https(self):
-    cert_path = mh_config.getCertFile()
-    self.assertTrue(os.path.isfile(cert_path), f"No certificate at {cert_path}")
-
-def test_certificate_path_is_configured(self):
-    cert_file = mh_config.getCertFile()
-    self.assertNotEqual(cert_file, mh_config.getConfigPath() + "/", "Certificate path empty")
-    self.assertTrue(cert_file.endswith('.pem'), f"Expected .pem file, got: {cert_file}")
+class TestHTTPSConfiguration:
+    @mock.patch("mh_endpoint.HTTPServer")
+    @mock.patch("mh_endpoint.check_if_anisette_is_reachable")
+    @mock.patch("os.path.isfile")
+    def test_runs_without_certificate(self, mock_isfile, mock_check_anisette, mock_http_server):
+        cert_path = mh_config.getCertFile()
+        
+        def isfile_side_effect(path):
+            if path == cert_path:
+                return False
+            return True
+        mock_isfile.side_effect = isfile_side_effect
+        
+        mh_endpoint.main()
+        
+        mock_isfile.assert_any_call(cert_path)
+        
+        mock_http_server.return_value.serve_forever.assert_not_called()
 \end{lstlisting}
 \end{minipage}
 \hfill
-\begin{minipage}[t]{0.48\linewidth}
-\begin{lstlisting}[style=cstyle, language=Python, caption={Test output for HTTPS Configuration}, label={lst:https_test}, basicstyle=\ttfamily\tiny\color{codetext}]
-TODOOOO
+\begin{minipage}[t]{0.49\linewidth}
+\begin{lstlisting}[style=cstyle, caption={Test output for HTTPS Configuration}, label={lst:https_test_output}, basicstyle=\ttfamily\tiny\color{codetext}, keywords={FAILED, AssertionError, Failed}, keywordstyle=\color{red}\bfseries, moredelim={[l][\color{red}]{E\ \ }}]
+===================== test session starts =====================
+platform linux -- Python 3.10.19, pytest-8.4.2, pluggy-1.6.0 -- /home/cyuzuzo/.pyenv/versions/3.10.19/bin/python3.10
+cachedir: .pytest_cache
+rootdir: /home/cyuzuzo/Projects/macless-haystack
+configfile: pytest.ini
+plugins: anyio-4.11.0
+collected 1 item                                                                                                                                                                                        
+
+test_security_pytest.py::TestHTTPSConfiguration::test_runs_without_certificate FAILED
+
+===================== FAILURES =====================
+_____ TestHTTPSConfiguration.test_runs_without_certificate _____
+test_security_pytest.py:49: in test_runs_without_certificate
+    mock_http_server.return_value.serve_forever.assert_not_called()
+../../.pyenv/versions/3.10.19/lib/python3.10/unittest/mock.py:890: in assert_not_called
+    raise AssertionError(msg)
+E   AssertionError: Expected 'serve_forever' to not have been called. Called 1 times.
+E   Calls: [call()].
 \end{lstlisting}
 \end{minipage}   
 
@@ -461,9 +554,10 @@ To assess GDPR compliance, we analyze the system based on the data controllers i
         \hline
         \textbf{Data controller} & \textbf{Personal Data Processed} & \textbf{GDPR Risks \& Violations} \\ \hline
         \textbf{The End User} & Private keys, tracked objects. & 
-        \textbf{Household Exemption:} Generally, for purely personal/household activities, GDPR may not apply (Art 2(2)(c)). \newline
         \textbf{Integrity (Art 5, 32):} Insecure key storage (plaintext JSON). \newline
-        \textbf{Lawfulness (Art 6):} Can circumvents anti-stalking protections making it easier for non-consensual surveillance. \\ \hline
+        \textbf{Lawfulness (Art 6):} Can more easily circumvents anti-stalking protections making non-consensual surveillance possible.\newline \textit{Household Exemption: Generally, for purely personal/household activities, GDPR may not apply (Art 2(2)(c)).} \newline
+ \\ \hline
+                \textit{Household Exemption: Generally, for purely personal/household activities, GDPR may not apply (Art 2(2)(c)).} \newline
         \textbf{Endpoint Operator} & endpoint operators: Apple ID, Password\newline users meta data: Encrypted reports, timestamps, debug logs (with Advertisement Keys). & 
         \textbf{Integrity \& Confidentiality:} plaintext credentials, unencrypted HTTP.\break gdpr could apply if meta data becomes linkable to a specific person.\newline
         \textbf{Transparency:} End user often uninformed about data processing; no documented purpose specification. \\ \hline
@@ -476,11 +570,64 @@ To assess GDPR compliance, we analyze the system based on the data controllers i
 % Part 3: Recommendations (no specific word limit mentioned, but part of 4000 word total)
 \section{Recommendations}
 \subsection{Credential Encryption}
-The backend of the application is written in python, so an appropriate way to store the config is using the "keyring" library. This library interacts with the OS level keychains, and provides a simple interface to store and retrieve credentials safely.
-To solve the issue that the privat-public keypairs are stored in plain text, a similar approuch can be used but using the flutter secure storage library.This will require a reworking of the generate\_keys.py script as its currently written in python, the reason its best to port it first to flutter is that sharing credentials saved in secure storage is non trivial and porting the short key generation script to flutter should be a small task.
+The backend of the application is written in python, so an appropriate way to store the secrets is using the "keyring" library. This library interacts with the OS level keychains, and provides a simple interface to store and retrieve credentials safely.
+The following code snippets show how this can be implemented, in both cases a json load / plain text read has been replaced by a keyring.get_password call.
+
+\begin{lstlisting}[style=cstyle, language=Python, caption={Secure implementation for appleid retrieval}, label={lst:secure_config}, basicstyle=\ttfamily\tiny\color{codetext}]
+def getUser():
+    user = keyring.get_password("macless-haystack", "apple_id")
+    if user:
+        return user
+    logger.error("Apple ID not found in keyring")
+    return None
+
+def getPass():
+    username = getUser()
+    if username:
+        password = keyring.get_password("macless-haystack-appleid", username)
+        if password:
+            return password
+    logger.error("Apple ID password not found in keyring")
+    return None
+\end{lstlisting}
+
+\begin{lstlisting}[style=cstyle, language=Python, caption={Secure implementation for authentication token storage}, label={lst:secure_auth}, basicstyle=\ttfamily\tiny\color{codetext}]
+def getAuth(regenerate=False):
+    service_id = "macless-haystack"
+    username = "auth"
+    stored_auth = keyring.get_password(service_id, username)
+
+    if stored_auth and not regenerate:
+        j = json.loads(stored_auth)
+    else:
+        logger.info('Trying to login')
+        mobileme = icloud_login_mobileme(
+            username=mh_config.getUser(), password=mh_config.getPass())
+
+        logger.debug('Answer from icloud login')
+        logger.debug(mobileme)
+        status = mobileme['delegates']['com.apple.mobileme']['status']
+        if status == 0:
+            j = {'dsid': mobileme['dsid'], 'searchPartyToken': mobileme['delegates']
+                 ['com.apple.mobileme']['service-data']['tokens']['searchPartyToken']}
+            keyring.set_password(service_id, username, json.dumps(j))
+        else:
+            msg = mobileme['delegates']['com.apple.mobileme']['status-message']
+            logger.error('Invalid status: ' + str(status))
+            logger.error('Error message: ' + msg)
+            if 'blocking' in msg:
+                logger.error(
+                    'It seems your account score is not high enough. Log in to https://appleid.apple.com/ and add your credit card (nothing will be charged) or additional data to increase it.')
+            logger.error('Unable to proceed, program will be terminated.')
+
+            sys.exit()
+    return (j['dsid'], j['searchPartyToken'])
+\end{lstlisting}
+To solve the issue that the private-public keypairs are stored in plain text, a similar approuch can be used but using the flutter secure storage library.
+This will require a reworking of the generate\_keys.py script as its currently written in python, the reason its best to port it first to flutter is that sharing credentials saved in secure storage is non trivial and porting the short key generation script to flutter should be a small task.
 \subsection{HTTPS Enforcement}
-The server should enforce HTTPS and not allow HTTP fallback when TLS certificates are missing. Currently, the server falls back to unencrypted HTTP if certificate files are not found. The server startup should check for both the TLS certificate and private key files, and terminate with a clear error message if either is missing, rather than falling back to HTTP. This prevents accidental deployment of an unencrypted server and ensures administrators are aware of the security requirement. For development and testing, a helper script should be provided to generate self-signed certificates, but production deployments should use certificates from a trusted certificate authority.
-An small assertion can be added to the server to check if the certificate is there, and if not, the server should exit with an error message. This prevents the server from running without a certificate.
+The server should enforce HTTPS and not allow HTTP fallback when TLS certificates are missing when deployed. Currently, the server falls back to unencrypted HTTP if certificate files are not found. The server startup should check for both the TLS certificate and private key files, and terminate with a clear error message if either is missing, rather than falling back to HTTP. For development and testing, a helper script should be provided to generate self-signed certificates, but production deployments should use certificates from a trusted certificate authority.
+An small assertion can be added to the server to check if the certificate is there, if not, the server should exit with an error message. This prevents the server from running without a certificate.
 
 \begin{lstlisting}[style=cstyle, language=Python, caption={HTTPS Enforcement Logic}, basicstyle=\ttfamily\tiny\color{codetext}]
 if os.path.isfile(mh_config.getCertFile()):
@@ -496,7 +643,24 @@ if os.path.isfile(mh_config.getCertFile()):
 else:
     logger.info("Certificate file not found, please provide a valid certificate file")
     logger.error("Exiting program")
-    sys.exit()
+    return
+\end{lstlisting}
+
+The following test output confirms that the recommendations solve the identified issues, with the exception of the private key storage which requires a more extensive changes as discussed.
+
+\begin{lstlisting}[style=cstyle, caption={Final Security Test Results}, label={lst:final_security_test}, basicstyle=\ttfamily\tiny\color{codetext}, keywords={FAILED}, keywordstyle=\color{red}\bfseries, emph={PASSED}, emphstyle=\color{green}\bfseries]
+===================== test session starts =====================
+platform linux -- Python 3.10.19, pytest-8.4.2, pluggy-1.6.0 -- /home/cyuzuzo/.pyenv/versions/3.10.19/bin/python3.10
+cachedir: .pytest_cache
+rootdir: /home/cyuzuzo/Projects/macless-haystack
+configfile: pytest.ini
+plugins: anyio-4.11.0
+collected 4 items
+
+test_security_pytest.py::TestHTTPSConfiguration::test_runs_without_certificate PASSED [ 25%]
+test_security_pytest.py::TestCredentialStorage::test_config_does_not_store_plaintext_passwords PASSED [ 50%]
+test_security_pytest.py::TestCredentialStorage::test_auth_stored_securely_in_keyring PASSED [ 75%]
+test_security_pytest.py::TestCredentialStorage::test_private_key_not_stored_as_plain_text FAILED [100%]
 \end{lstlisting}
 
 \subsection{Handling the GDPR and EULA Violations}
