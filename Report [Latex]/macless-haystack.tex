@@ -76,10 +76,10 @@
 
 % Introduction/Executive Summary
 \section{Introduction}
-This report presents a Privacy Impact Assessment (PIA) for Macless-Haystack \cite{maclesshaystack}, an open-source (research) project that enables users to use Apple's 'Find My' network without requiring Apple hardware.As the technology for global tracking systems becomes increasingly more accessible by the introduction of global distributed networks such as the Apple 'Find My', Google 'Find My Device' and Amazon 'Sidewalk' networks.Understanding the privacy implications of such technologies is important for both developers and users.
+This report presents a Privacy Impact Assessment (PIA) for Macless-Haystack \cite{maclesshaystack}, an open-source (research) project that enables users to use Apple's 'Find My' network without requiring Apple hardware. As the technology for global tracking systems becomes increasingly more accessible by the introduction of global distributed networks such as the Apple 'Find My', Google 'Find My Device' and Amazon 'Sidewalk' networks.Understanding the privacy implications of such technologies is important for both developers and users.
 \bigskip
 
-The report examines how Macless-Haystack collects, processes and stores data.It identifies potential privacy risks and proposes technical solutions to mitigate these concerns. We analyze the system from multiple perspectives: the tracker devices themselves, the Macless-Haystack application and API.
+The report examines how Macless-Haystack collects, processes and stores data. It identifies potential privacy risks and proposes technical solutions to mitigate these concerns. We analyze the system from multiple perspectives: the tracker devices themselves, the Macless-Haystack application and API.
 \bigskip
 
 This report is structured in three main parts. First, we provide a detailed description of the application's functionality, stakeholders, and data collection practices. Second, we conduct a privacy impact assessment that includes a threat model, identification of privacy issues, and an analysis of specific threats. Finally, we present recommendations for addressing the identified privacy concerns, with particular focus on technical implementations that can be tested and verified.
@@ -106,7 +106,7 @@ This report is structured in three main parts. First, we provide a detailed desc
 Macless-Haystack builds upon the OpenHaystack \cite{openhaystack} project, which reverse engineered the Apple 'Find My' application that enables the tracking of low cost Bluetooth devices without the need of an internet connection.
 \bigskip
 
-At a high level, the trackers broadcast an identifier which can be detected by nearby Apple devices. These Apple devices then anonymously upload an encrypted report which contains its current GPS location. The owner can later retrieve the location of their tracker by requesting these reports.
+At a high level, the tracker broadcasts an identifier which can be detected by nearby Apple devices. These Apple devices then anonymously upload an encrypted report which contains it's current GPS location. The owner can later retrieve the location of their tracker by requesting these reports.
 Figure~\ref{fig:macless-haystack} above visually represents the four main stages of the application:
 
 \begin{enumerate}
@@ -164,24 +164,24 @@ The primary stakeholders are the end users who want to research the 'Find My' ne
 They are responsible for generating the keypairs used in the system and storing them safely, as well as programming the advertisement key onto the tracker.
 
 \bigskip
-The Macless-Haystack API operator is the party running the backend that accesses the 'Find My' network and fetches encrypted location reports.In practices this is the same party as the end user, as there are to our knowledge no public Macless-Haystack API endpoints.
+The Macless-Haystack API operator is the party running the backend that accesses the 'Find My' network and fetches encrypted location reports. In practices this is the same party as the end user because to our knowledge no public Macless-Haystack API endpoints exist.
 
 \bigskip
 The Anisette server operator runs the separate service that Macless-Haystack API connects to in order to emulate a real Apple device during login and communication with Apple. This role can again coincide with the endpoint operator in a self-hosted setup, but when a public or third-party Anisette instance is used, that operator becomes a distinct stakeholder who may see sensitive authentication-related traffic and must therefore be explicitly trusted.
 
 \bigskip
-Apple is an indirect but essential stakeholder, as its 'Find My' and iCloud infrastructure receives the encrypted location reports from nearby Apple devices and serves them to the Macless-Haystack endpoint.
+Apple is an indirect but essential stakeholder, as it's 'Find My' and iCloud infrastructure receive the encrypted location reports from nearby Apple devices and serves them to the Macless-Haystack endpoint.
 To further visualise the stakeholders and their relationships, see figure~\ref{fig:stakeholders}.
 
 \bigskip
 In essence, the only sensitive data in the system is the private key of the tracker. The encrypted location reports and the advertisement key are public information as anyone that is physically close to the tracker can read the advertisement key and request the encrypted location reports.
-Meaning that all data that flows through this part of the system is public information, and should contain no (accessible) personal data.A important detail that is not in the diagram is that the finder device itself generates and encrypts the location reports, this internal data to the finder device is very personal and defintely not public information. 
+This means that all data that flows through this part of the system is public information, and should contain no (accessible) personal data. A important detail that is not in the diagram is that the finder device itself generates and encrypts the location reports, this internal data is very personal and is defintely not public information. 
 
 \bigskip
-The data in the operator endpoint however could contain some personal data, depending on the hosting setup.
+The data in the operator endpoint, however, could contain some personal data, depending on the hosting setup.
 Conventionally, the endpoint operator only has access to metadata and the encrypted location reports, which are public information.
-But if the endpoint operator requests the apple id and password of the end user, and uses this to login to apple and fetch the encrypted location reports.
-Additional trust must be had in it as these credentials could be used for non find my purposes.
+If the endpoint operator requests the apple id and password of the end user, and uses this to login to apple and fetch the encrypted location reports.
+Additional trust must be had in it as these credentials could be used for non 'Find My' purposes.
 
 \bigskip
 
@@ -214,16 +214,16 @@ The system involves multiple components, each collecting different types of data
 Since Apple's implementation is closed-source, we rely on community reverse-engineering efforts to understand the data collection process. A blog post analyzing the finder device~\cite{binaryhick2025searchparty} discovered that when an Apple device detects a tracker, it temporarily stores the advertisement key, GPS location, Bluetooth signal strength (RSSI), timestamp, and other metadata.
 This data is reportedly deleted quickly (within ~5 minutes), though users can extend this by enabling airplane mode. Apple also employs algorithms to detect unwanted tracking, which may trigger additional data retention on the finding device.
 Once uploaded, Apple stores the advertisement key and the encrypted location report. While the location report itself is encrypted, the metadata, such as the uploader's IP address could be visible to Apple.
-This creates a theoretical risk where Apple could link a tracker to a specific user if that user's own (Apple) devices frequently report the tracker's location. Furthermore, Apple could identify Macless-Haystack operators and potentially terminate the associated Apple IDs to prevent abuse however this has not been reported to happen in practice.
+This creates a theoretical risk where Apple could link a tracker to a specific user if that user's own (Apple) devices frequently reports the tracker's location. Furthermore, Apple could identify Macless-Haystack operators and potentially terminate the associated Apple IDs to prevent abuse however this has not been reported to happen in practice.
 % Part 2: Privacy Impact Assessment (max 2500 words)
 \section{Privacy Impact Assessment}
 
 \subsection{Threat Model}
-The system's privacy properties depend on several trust assumptions. Users must trust Apple's infrastructure to provide end-to-end encryption (though Apple could have metadata visibility), the endpoint operator to protect stored credentials and logs. The primary trust boundaries exist at: (1) Bluetooth broadcast between tracker and nearby devices, (2) network communication between frontend and backend, (3) authenticated connections to Apple's servers, and (4) filesystem access on the server. These boundaries represent the main points where information can be compromised, as detailed in the threat analysis below.    
+The system's privacy properties depend on several trust assumptions. Users must trust Apple's infrastructure to provide end-to-end encryption (though Apple could have metadata visibility) and the endpoint operator to protect stored credentials and logs. The primary trust boundaries exist at: (1) Bluetooth broadcasts between the tracker and nearby devices, (2) network communication between the frontend and backend, (3) authenticated connections to Apple's servers, and (4) filesystem access on the server. These boundaries represent the main points where information can be compromised, as detailed in the threat analysis below.    
 
 \subsection{LINDDUN Privacy Threat Analysis}
 Using the detailed dataflow diagram (Figure~\ref{fig:dataflow_diagram}) and the LINDDUN framework, we can analyze the privacy threats in the system.
-As the current diagram is very small, a large full page version is included in the Appendices.
+As the current diagram is very small, a large full page version is included in the Appendices \ref{fig:dataflow_diagram_full}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/dataflow.png}
@@ -271,10 +271,9 @@ I.1.2 & Information Disclosure & Apple servers receive query metadata revealing 
 \newpage
 \subsection{Main Identified Privacy Threats}
 \subsubsection{Plain Text Credentials}
-The current implementation stores authentication tokens and passwords in plaintext files that can be read directly without decryption\footnote{Remote shell access is a common objective for attackers, such as the critical flaw recently discovered in the React library. Consequently, the file system cannot be trusted simply because the enduser can't directly access it.}. The auth.json file contains authentication tokens (dsid and searchPartyToken) used to communicate with Apple's servers instead of passwords after initial login. These tokens are stored as plaintext JSON, meaning anyone with file system access can read them directly. Similarly, passwords in config.ini are stored in plaintext, allowing direct reading of sensitive credentials. The tokens are obtained after the initial Apple ID login and are used for subsequent API calls. In the code snippet below, you can see how we test for plain text credentials.
-As config.ini is not written to by the program, it cannot be unit tested in the traditional sense. To ensure privacy, we added a specific test to verify that the file does not contain any plaintext passwords.
-The key generation script's procedural style, standard unit testing is not possible. We tested it by mocking the environment and executing the script string directly, though a object oriented rewrite would be a more robust solution.\\    
-\begin{lstlisting}[style=cstyle, language=Python, caption={Test Credential Storage}, label={lst:credential_test}, basicstyle=\ttfamily\tiny\color{codetext}]
+The current implementation stores authentication tokens and passwords in plain text files that can be read directly without decryption\footnote{Remote shell access is a common objective for attackers, such as the critical flaw recently discovered in the React library. Consequently, the file system cannot be trusted simply because the enduser can't directly access it.}. The auth.json file contains authentication tokens (dsid and searchPartyToken) used to communicate with Apple's servers instead of passwords after initial login. These tokens are stored as plain text JSON, meaning anyone with file system access can read them directly. Similarly, passwords in config.ini are stored in plain text, allowing direct reading of sensitive credentials. In the code snippet below, you can see how we test for plain text credentials.
+Config.ini is not written to by the program resulting in it not being able to be unit tested in the traditional sense. To ensure privacy, we added a specific test to read the file and check that it does not contain any plain text passwords.
+\begin{lstlisting}[style=cstyle, language=Python, caption={Test showing plain text credential storage}, label={lst:credential_test}, basicstyle=\ttfamily\tiny\color{codetext}]
 class TestCredentialStorage:
     def test_config_does_not_store_plaintext_passwords(self):
         config_path = mh_config.getConfigPath() + "/config.ini"
@@ -286,7 +285,6 @@ class TestCredentialStorage:
                     match = re.match(rf'{field}\s*=\s*(.*)$', line.strip())
                     if match:
                         has_plaintext = True
-
         assert not has_plaintext, "config.ini contains plaintext passwords"
 
     @mock.patch("endpoint.mh_endpoint.pypush_gsa_icloud.icloud_login_mobileme")
@@ -305,7 +303,6 @@ class TestCredentialStorage:
                 }
             }
         }
-        
         mock_icloud_login.return_value = fake_mobileme
 
         mh_config.USER = "fakeuser"
@@ -320,20 +317,19 @@ class TestCredentialStorage:
         assert 'searchPartyToken' not in data, "searchPartyToken should not be stored in auth.json"
         assert 'dsid' not in data, "dsid should not be stored in auth.json"
 
+    # The key generation script's procedural style makes standard unit testing not possible.
+    # We tested it by mocking the environment and executing the script string directly.
     @mock.patch('shutil.rmtree')
     @mock.patch('os.path.exists', return_value=False)
     @mock.patch('os.mkdir')
     @mock.patch('builtins.open')
     def test_private_key_not_stored_as_plain_text(self, mock_open, mock_mkdir, mock_exists, mock_rmtree):
-
-        # Setup file system mocks
         file_mocks = {}
         def open_side_effect(filename, mode='r', *args, **kwargs):
             m = mock.MagicMock()
             m.__enter__.return_value = m
             file_mocks[filename] = m
             return m
-            
         mock_open.side_effect = open_side_effect
 
         # Execute script
@@ -357,7 +353,7 @@ class TestCredentialStorage:
             if device.get('privateKey'):
                 pytest.fail(f"Private key found in plain text")
 \end{lstlisting}
-
+\bigskip
 \begin{lstlisting}[style=cstyle, caption={Test Output showing privacy failures}, label={lst:credential_test_output}, basicstyle=\ttfamily\tiny\color{codetext}, keywords={FAILED, AssertionError, Failed}, keywordstyle=\color{red}\bfseries, moredelim={[l][\color{red}]{E\ \ }}]
 ========================= test session starts =========================
 platform linux -- Python 3.10.19, pytest-8.4.2, pluggy-1.6.0 -- /home/cyuzuzo/.pyenv/versions/3.10.19/bin/python3.10
@@ -388,17 +384,18 @@ test_security_pytest.py:139: in test_private_key_not_stored_as_plain_text
 E   Failed: Private key found in plain text
 \end{lstlisting}
  \subsubsection{HTTP Communication}
-The current Macless Haystack server implementation allows the endpoint to run over unencrypted HTTP when TLS certificates are not configured. The code checks for the presence of certificate files and falls back to HTTP if they are missing. This creates a security risk because all communication between client and server occurs in plaintext, making it vulnerable to network sniffing and man-in-the-middle attacks. An attacker on the same network can intercept and read all traffic, including Basic Authentication credentials between the endpoint and the client that are only Base64-encoded and easily decoded.
+The current Macless Haystack server implementation allows the endpoint to run over unencrypted HTTP when TLS certificates are not configured. The code checks for the presence of certificate files and falls back to HTTP if they are missing. This creates a security risk because all communication between client and server occurs in plain text, making it vulnerable to network sniffing and man-in-the-middle attacks. An attacker on the same network can intercept and read all traffic, including Basic Authentication credentials between the endpoint and the client that are only Base64-encoded and easily decoded.
 \\
 \begin{minipage}[t]{0.49\linewidth}
-\begin{lstlisting}[style=cstyle, language=Python, caption={Test HTTPS Configuration}, label={lst:https_test}, basicstyle=\ttfamily\tiny\color{codetext}]
+\begin{lstlisting}[style=cstyle, language=Python, caption={Test if http is allowed}, label={lst:https_test}, basicstyle=\ttfamily\tiny\color{codetext}]
 class TestHTTPSConfiguration:
     @mock.patch("mh_endpoint.HTTPServer")
     @mock.patch("mh_endpoint.check_if_anisette_is_reachable")
     @mock.patch("os.path.isfile")
-    def test_runs_without_certificate(self, mock_isfile, mock_check_anisette, mock_http_server):
+    def test_runs_without_certificate(self, mock_isfile, mock_check_anisette, mock_server):
         cert_path = mh_config.getCertFile()
-        
+
+        # mock the certificate file not existing
         def isfile_side_effect(path):
             if path == cert_path:
                 return False
@@ -409,12 +406,12 @@ class TestHTTPSConfiguration:
         
         mock_isfile.assert_any_call(cert_path)
         
-        mock_http_server.return_value.serve_forever.assert_not_called()
+        mock_server.return_value.serve_forever.assert_not_called()
 \end{lstlisting}
 \end{minipage}
 \hfill
 \begin{minipage}[t]{0.49\linewidth}
-\begin{lstlisting}[style=cstyle, caption={Test output for HTTPS Configuration}, label={lst:https_test_output}, basicstyle=\ttfamily\tiny\color{codetext}, keywords={FAILED, AssertionError, Failed}, keywordstyle=\color{red}\bfseries, moredelim={[l][\color{red}]{E\ \ }}]
+\begin{lstlisting}[style=cstyle, caption={Test output showing http is allowed}, label={lst:https_test_output}, basicstyle=\ttfamily\tiny\color{codetext}, keywords={FAILED, AssertionError, Failed}, keywordstyle=\color{red}\bfseries, moredelim={[l][\color{red}]{E\ \ }}]
 ===================== test session starts =====================
 platform linux -- Python 3.10.19, pytest-8.4.2, pluggy-1.6.0 -- /home/cyuzuzo/.pyenv/versions/3.10.19/bin/python3.10
 cachedir: .pytest_cache
@@ -439,7 +436,7 @@ E   Calls: [call()].
 %\todo[inline]{Add unit test for plain text credentials}
 
 \subsubsection{Advertisement Keys in Macless Haystack}
-In the current setup, each tracker continuously broadcasts a beacon containing the same static\footnote{The firmware supports the use of multiple static keys; This creates the exact same issue but to exploit it, you would need to observe the device over a longer period of time.} advertisement key. Any Apple device that receives such a packet takes its own location and encrypts that, so that only the trackers matching private key can decrypt it.Using a static public key introduces a serious linkability privacy problem. Because the same identifier is broadcasted in every packet, any nearby device with a simple BLE sniffer can record this constant over time and across different places and then correlate all sightings as belonging to the same physical tracker. This means that anyone could build a detailed movement profile of the tagged object or person just by re-observing the same static key at different locations. The encryption protects the content of each report from being read but it does nothing to stop third parties from recognizing that "this is the same beacon as yesterday" and inferring sensitive patterns (home, workplace, daily routines) purely from repeated observations.
+In the current setup, each tracker continuously broadcasts a beacon containing the same static\footnote{The firmware supports the use of multiple static keys; This creates the exact same issue but to exploit it, you would need to observe the device over a longer period of time.} advertisement key. Any Apple device that receives such a packet takes its own location and encrypts that, so that only the trackers matching private key can decrypt it. Using a static public key introduces a serious linkability privacy problem. Because the same identifier is broadcasted in every packet, any nearby device with a simple BLE sniffer can record this constant over time, and across different places and then correlate all sightings as belonging to the same physical tracker. This means that anyone could build a detailed movement profile of the tagged object or person just by re-observing the same static key at different locations. The encryption protects the content of each report from being read but it does nothing to stop third parties from recognizing that this is the same beacon as yesterday and inferring sensitive patterns (home, workplace, daily routines) purely from repeated observations.
 \\
 \\
 Additionally, if Apple is considered an untrustworthy entity, they could analyze the metadata accompanying location reports, such as the static advertisement key and the finding device's IP address to infer the user's approximate location and reconstruct movement patterns or daily routines.
@@ -451,7 +448,6 @@ A testing environment and test suite were developed to evaluate this behavior in
 \begin{lstlisting}[style=cstyle, language=C, caption={Unit Test used to check if static codes are being used}, basicstyle=\ttfamily\tiny\color{codetext}]
 /**
  * @brief Test that multiple openhaystack_run calls use the same advertisement data
- * 
  * This proves non-rolling behavior by showing that
  * esp_ble_gap_config_adv_data_raw is called with identical data across multiple runs. 
  */
@@ -505,36 +501,6 @@ I (1054) macless_haystack: using key with start 93 44
 I (1064) macless_haystack: Sending beacon
 I (1174) macless_haystack: Current cycle is 0. Reusing key. 
 I (1274) macless_haystack: Going to sleep
-I (1374) macless_haystack: Loading key with index 0 at address 1
-I (1374) macless_haystack: using key with start 93 44
-I (1374) macless_haystack: Sending beacon
-I (1484) macless_haystack: Current cycle is 1. Reusing key. 
-I (1584) macless_haystack: Going to sleep
-I (1684) macless_haystack: Loading key with index 0 at address 1
-I (1684) macless_haystack: using key with start 93 44
-I (1684) macless_haystack: Sending beacon
-I (1794) macless_haystack: Current cycle is 2. Reusing key. 
-I (1894) macless_haystack: Going to sleep
-I (1994) macless_haystack: Loading key with index 0 at address 1
-I (1994) macless_haystack: using key with start 93 44
-I (1994) macless_haystack: Sending beacon
-I (2104) macless_haystack: Current cycle is 3. Reusing key. 
-I (2204) macless_haystack: Going to sleep
-I (2304) macless_haystack: Loading key with index 0 at address 1
-I (2304) macless_haystack: using key with start 93 44
-I (2304) macless_haystack: Sending beacon
-I (2414) macless_haystack: Current cycle is 4. Reusing key. 
-I (2514) macless_haystack: Going to sleep
-I (2614) macless_haystack: Loading key with index 0 at address 1
-I (2614) macless_haystack: using key with start 93 44
-I (2614) macless_haystack: Sending beacon
-I (2724) macless_haystack: Max cycles 5 are reached. Changing key 
-I (2824) macless_haystack: Going to sleep
-I (2924) macless_haystack: Loading key with index 0 at address 1
-I (2924) macless_haystack: using key with start 93 44
-I (2924) macless_haystack: Sending beacon
-I (3034) macless_haystack: Current cycle is 0. Reusing key. 
-I (3134) macless_haystack: Going to sleep
 ./main/main.c:119::FAIL: Expected Not-Equal
 
 -----------------------
@@ -547,33 +513,35 @@ FAIL
 
 \subsubsection{GDPR Compliance}
 To assess GDPR compliance, we analyze the system based on the data controllers involved, the personal data they process.
-\begin{table}[H]
-    \centering
-    \label{tab:gdpr_stakeholders}
-    \begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}p{2.5cm}|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|}
-        \hline
-        \textbf{Data controller} & \textbf{Personal Data Processed} & \textbf{GDPR Risks \& Violations} \\ \hline
-        \textbf{The End User} & Private keys, tracked objects. & 
-        \textbf{Integrity (Art 5, 32):} Insecure key storage (plaintext JSON). \newline
-        \textbf{Lawfulness (Art 6):} Can more easily circumvents anti-stalking protections making non-consensual surveillance possible.\newline \textit{Household Exemption: Generally, for purely personal/household activities, GDPR may not apply (Art 2(2)(c)).} \newline
- \\ \hline
-                \textit{Household Exemption: Generally, for purely personal/household activities, GDPR may not apply (Art 2(2)(c)).} \newline
-        \textbf{Endpoint Operator} & endpoint operators: Apple ID, Password\newline users meta data: Encrypted reports, timestamps, debug logs (with Advertisement Keys). & 
-        \textbf{Integrity \& Confidentiality:} plaintext credentials, unencrypted HTTP.\break gdpr could apply if meta data becomes linkable to a specific person.\newline
-        \textbf{Transparency:} End user often uninformed about data processing; no documented purpose specification. \\ \hline
-        \textbf{Apple} & Encrypted location reports, advertisement keys & 
-        \textbf{Linkability:} In self-hosted setups, Apple could link the tracker to the owner's Apple ID.\newline
-        \textbf{Solution:} Rolling keys significantly reduce the ability to link reports to a single device. \\ \hline
-    \end{tabularx}
-\end{table}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{2.5cm}|>{\raggedright\arraybackslash}p{5cm}|>{\raggedright\arraybackslash}p{7cm}|}
+\caption{GDPR Compliance Analysis by Data Controller}\label{tab:gdpr_stakeholders}\\
+\hline
+\textbf{Data controller} & \textbf{Personal Data Processed} & \textbf{GDPR Risks \& Violations} \\ \hline
+\endfirsthead
+\hline
+\textbf{Data controller} & \textbf{Personal Data Processed} & \textbf{GDPR Risks \& Violations} \\ \hline
+\endhead
+\hline
+\endfoot
+\textbf{The End User} & Private keys, tracked objects. & 
+\textbf{Integrity (Art 5, 32):} Insecure key storage (plain text JSON). \newline
+\textbf{Lawfulness (Art 6):} Can more easily circumvents anti-stalking protections making non-consensual surveillance possible.\newline \textit{Household Exemption: Generally, for purely personal/household activities, GDPR may not apply (Art 2(2)(c)).} \\ \hline
+\textbf{Endpoint Operator} & endpoint operators: Apple ID, Password\newline users meta data: Encrypted reports, timestamps, debug logs (with Advertisement Keys). & 
+\textbf{Integrity \& Confidentiality:} unencrypted HTTP traffic (only applies if the data becomes linkable to a specific person), plain text credentials.\newline
+\textbf{Transparency:} End user often uninformed about data processing; no documented purpose specification. \\ \hline
+\textbf{Apple} & Encrypted location reports, advertisement keys & 
+\textbf{Linkability:} In self-hosted setups, Apple could link the tracker to the owner's Apple ID.\newline
+\textbf{Solution:} Rolling keys significantly reduce the ability to link reports to a person. \\ \hline
+\end{longtable}
 
 % Part 3: Recommendations (no specific word limit mentioned, but part of 4000 word total)
 \section{Recommendations}
 \subsection{Credential Encryption}
 The backend of the application is written in python, so an appropriate way to store the secrets is using the "keyring" library. This library interacts with the OS level keychains, and provides a simple interface to store and retrieve credentials safely.
-The following code snippets show how this can be implemented, in both cases a json load / plain text read has been replaced by a keyring.get_password call.
+The following code snippets show how this can be implemented, in both cases a json load / plain text read has been replaced by a keyring.get\_password call.
 
-\begin{lstlisting}[style=cstyle, language=Python, caption={Secure implementation for appleid retrieval}, label={lst:secure_config}, basicstyle=\ttfamily\tiny\color{codetext}]
+\begin{minipage}[t]{0.48\linewidth}
+\begin{lstlisting}[style=cstyle, language=Python, caption={Secure implementation for Apple ID retrieval}, label={lst:secure_config}, basicstyle=\ttfamily\tiny\color{codetext}]
 def getUser():
     user = keyring.get_password("macless-haystack", "apple_id")
     if user:
@@ -590,7 +558,9 @@ def getPass():
     logger.error("Apple ID password not found in keyring")
     return None
 \end{lstlisting}
-
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\linewidth}
 \begin{lstlisting}[style=cstyle, language=Python, caption={Secure implementation for authentication token storage}, label={lst:secure_auth}, basicstyle=\ttfamily\tiny\color{codetext}]
 def getAuth(regenerate=False):
     service_id = "macless-haystack"
@@ -623,12 +593,13 @@ def getAuth(regenerate=False):
             sys.exit()
     return (j['dsid'], j['searchPartyToken'])
 \end{lstlisting}
-To solve the issue that the private-public keypairs are stored in plain text, a similar approuch can be used but using the flutter secure storage library.
-This will require a reworking of the generate\_keys.py script as its currently written in python, the reason its best to port it first to flutter is that sharing credentials saved in secure storage is non trivial and porting the short key generation script to flutter should be a small task.
+\end{minipage}
+To solve the issue that the private-public key pairs are stored in plain text, a similar approach can be used using the flutter secure storage library.
+This will require a reworking of the generate\_keys.py script as its currently written in python. The reason as to which it is better to port it into flutter is that sharing credentials saved in secure storage is non trivial and porting the short key generation script to flutter should be a small task.
 \subsection{HTTPS Enforcement}
 The server should enforce HTTPS and not allow HTTP fallback when TLS certificates are missing when deployed. Currently, the server falls back to unencrypted HTTP if certificate files are not found. The server startup should check for both the TLS certificate and private key files, and terminate with a clear error message if either is missing, rather than falling back to HTTP. For development and testing, a helper script should be provided to generate self-signed certificates, but production deployments should use certificates from a trusted certificate authority.
-An small assertion can be added to the server to check if the certificate is there, if not, the server should exit with an error message. This prevents the server from running without a certificate.
-
+A small assertion can be added to the server to check if the certificate is there, if not, the server should exit with an error message. This prevents the server from running without a certificate.
+\newpage
 \begin{lstlisting}[style=cstyle, language=Python, caption={HTTPS Enforcement Logic}, basicstyle=\ttfamily\tiny\color{codetext}]
 if os.path.isfile(mh_config.getCertFile()):
     logger.info("Certificate file " + mh_config.getCertFile() +
@@ -664,7 +635,7 @@ test_security_pytest.py::TestCredentialStorage::test_private_key_not_stored_as_p
 \end{lstlisting}
 
 \subsection{Handling the GDPR and EULA Violations}
-Our recommended solution to the GDPR and EULA violations is to obtain explicit consent from the user regarding the use of the application and the collection of their data. Additionally, it is importa to inform users that the application is used at their own risk, and that they are advised to host the Macless-Haystack server themselves while being fully aware of the privacy implications associated with this application.
+Our recommended solution to the GDPR and EULA violations is to obtain explicit consent from the user regarding the use of the application and the collection of their data. Additionally, it is important to inform users that the application is used at their own risk, and that they are advised to host the Macless-Haystack server themselves while being fully aware of the privacy implications associated with this application.
 
 A similar disclaimer is included in the GitHub README.This information should be incorporated directly into the application itself, together with a clear consent form.
 
@@ -686,14 +657,14 @@ The major downside of this approach is that if the key-rolling interval is set t
 Updating the user application is challenging because custom trackers are less reliable than official AirTags, users may not open the application for weeks or even months at a time.
 \\
 \\
-As a result, when a user returns to the application after a long period of inactivity, we cannot assume that the current advertisement key is simply the last known key incremented by the elapsed time. The tracker may have been powered off for a significant portion of that period, making the actual key state unpredictable.
+As a result, when a user returns to the application after a long period of inactivity, we cannot assume that the current advertisement key is simply the last known key incremented by the elapsed time. The tracker may have been powered off for a significant portion of that period, making the current key unpredictable.
 \\
 \\
 This uncertainty forces us to search backward from the estimated current key to the last known key. However, performing this search naively risks triggering Apple server rate limits or bans.
-The unreliability of the tracker can be mitigated by integrating an RTC module into the tracker. An RTC would provide accurate timekeeping, allowing the application to reliably calculate key updates even after extended powered off periods\footnote{RTC modules typically include a built-in backup battery to maintain timekeeping when the host device is unpowered. Battery life can range from several months to over ten years, depending on usage.}
+The unreliability of the tracker can be mitigated by integrating an real-time clock (RTC) module into the tracker. An RTC would provide accurate timekeeping, allowing the application to reliably calculate key updates even after extended powered off periods\footnote{RTC modules typically include a built-in backup battery to maintain timekeeping when the host device is unpowered. Battery life can range from several months to over ten years, depending on usage.}
 \\
 \\
-To check if our recommendation worked, we implemented this in a proof of concept firmware and application, and confirmed both in practice that it works and that the unit test succeeds.
+To check if our recommendation worked, we implemented this in a proof of concept firmware and application, and confirmed both that it works in practice that and that the unit test succeeds.
 \\
 \begin{minipage}[t]{0.48\linewidth}
 \begin{lstlisting}[style=cstyle, language=C, caption={Rolling Key Implementation }, basicstyle=\ttfamily\tiny\color{codetext}]
@@ -815,11 +786,12 @@ OK
 \end{lstlisting}
 \end{minipage}
 \footnote{The ESP SDK's CI/CD tools are limitted and testing needs to be done on the tracker. This is the reason the test logs include so many log messages.}
+\newpage
 \section{Conclusion}
 This privacy impact assessment evaluated Macless-Haystack, an open-source project that enables users access to Apple's 'Find My' network without requiring Apple hardware and thus processes sensitive location-related data and authentication credentials. The assessment identified linkability through static advertisement keys as the primary risk, because persistent Bluetooth identifiers allow passive tracking despite there being strong encryption of local reports. Additional risks identified are plaintext credential storage and optional unencrypted communication.
 \bigskip
 
-The most notable mitigation proposed is the use of rolling advertisement keys to reduce linkability and therefore improve the privacy by design. Other suggestions included enforcing HTTPS and encrypting credentials at rest. While all of these measures significantly reduce risk, some residual privacy, legal and GDPR compliance concerns remain inherent to the system due to its reliance on Apple's proprietary infrastructure and potential work-around of the anti-stalking protections. 
+The most notable mitigation proposed is the use of rolling advertisement keys to reduce linkability and therefore improve the privacy by design. Other suggestions included enforcing HTTPS and encrypting credentials. While all of these measures significantly reduce risk, some residual privacy, legal and GDPR compliance concerns remain inherent to the system due to its reliance on Apple's proprietary infrastructure and potential work-around of the anti-stalking protections. 
 
 \bigskip
 In conclusion, Macless-Haystack should be used with caution and limited to contexts where users and operators fully understand and accept the associated risks.
