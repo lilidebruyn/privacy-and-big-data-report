@@ -76,7 +76,7 @@
 
 % Introduction/Executive Summary
 \section{Introduction}
-This report presents a Privacy Impact Assessment (PIA) for Macless-Haystack \cite{maclesshaystack}, an open-source (research) project that enables users to use Apple's 'Find My' network without requiring Apple hardware. As the technology for global tracking systems becomes increasingly more accessible by the introduction of global distributed networks such as the Apple 'Find My', Google 'Find My Device' and Amazon 'Sidewalk' networks.Understanding the privacy implications of such technologies is important for both developers and users.
+This report presents a Privacy Impact Assessment (PIA) for Macless-Haystack \cite{maclesshaystack}, an open-source (research) project that enables users to use Apple's 'Find My' network without requiring Apple hardware. As the technology for global tracking systems becomes increasingly more accessible by the introduction of global distributed networks such as the Apple 'Find My', Google 'Find My Device' and Amazon 'Sidewalk' networks, understanding the privacy implications of such technologies is important for both developers and users.
 \bigskip
 
 The report examines how Macless-Haystack collects, processes and stores data. It identifies potential privacy risks and proposes technical solutions to mitigate these concerns. We analyze the system from multiple perspectives: the tracker devices themselves, the Macless-Haystack application and API.
@@ -110,10 +110,10 @@ At a high level, the tracker broadcasts an identifier which can be detected by n
 Figure~\ref{fig:macless-haystack} above visually represents the four main stages of the application:
 
 \begin{enumerate}
-    \item \textbf{Initial setup}: The process begins with the owner pairing their device, this means generating a unique private and public(advertisement) key pair and programming the advertisement key onto the tracker.
+    \item \textbf{Initial setup}: The process begins with the owner pairing their device, this means generating a unique private and public (advertisement) key pair and programming the advertisement key onto the tracker.
     \item \textbf{Broadcast}: After setup, the tracker begins broadcasting Bluetooth packets that are based on its advertisement key. Apple devices nearby act as a finder device and can pick up on these advertisements.
     \item \textbf{Upload encrypted location reports}: When a finder device detects an advertisement, it generates a report containing its current GPS location. This location is then encrypted using the advertisement key broadcasted by the device, making it inaccessible to everyone except the owner. The encrypted report is uploaded to Apple's servers.
-    \item \textbf{Download and decrypt location reports}: Anyone with access to the key-pair can then request the location reports linked to the tracker's keys.Using the matching private key, the owner can decrypt these reports get the trackers location.
+    \item \textbf{Download and decrypt location reports}: Anyone with access to the key-pair can then request the location reports linked to the tracker's keys. Using the matching private key, the owner can decrypt these reports get the trackers location.
 \end{enumerate}
 
 \begin{figure}[ht]
@@ -171,16 +171,16 @@ The Anisette server operator runs the separate service that Macless-Haystack API
 
 \bigskip
 Apple is an indirect but essential stakeholder, as it's 'Find My' and iCloud infrastructure receive the encrypted location reports from nearby Apple devices and serves them to the Macless-Haystack endpoint.
-To further visualise the stakeholders and their relationships, see figure~\ref{fig:stakeholders}.
-
+To further visualise the stakeholders and their relationships, see Figure~\ref{fig:stakeholders}.
 \bigskip
+
 In essence, the only sensitive data in the system is the private key of the tracker. The encrypted location reports and the advertisement key are public information as anyone that is physically close to the tracker can read the advertisement key and request the encrypted location reports.
-This means that all data that flows through this part of the system is public information, and should contain no (accessible) personal data. A important detail that is not in the diagram is that the finder device itself generates and encrypts the location reports, this internal data is very personal and is defintely not public information. 
+This means that all data that flows through this part of the system is public information, and should contain no (accessible) personal data. An important detail that is not in the diagram is that the finder device itself generates and encrypts the location reports, this internal data is very personal and is defintely not public information. 
 
 \bigskip
 The data in the operator endpoint, however, could contain some personal data, depending on the hosting setup.
 Conventionally, the endpoint operator only has access to metadata and the encrypted location reports, which are public information.
-If the endpoint operator requests the apple id and password of the end user, and uses this to login to apple and fetch the encrypted location reports.
+If the endpoint operator requests the Apple ID and password of the end user, and uses this to login to Apple and fetch the encrypted location reports.
 Additional trust must be had in it as these credentials could be used for non 'Find My' purposes.
 
 \bigskip
